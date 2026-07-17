@@ -7,7 +7,7 @@ function getAiClient(): GoogleGenAI {
   if (!aiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY environment variable is not defined in the secrets.");
+      throw new Error("GEMINI_API_KEY environment variable is not defined.");
     }
     aiClient = new GoogleGenAI({
       apiKey,
@@ -22,15 +22,17 @@ function getAiClient(): GoogleGenAI {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
   }
 
   try {
     const { character, chapter, concept, scenario, choice, consequence } = req.body;
 
     if (!character || !chapter || !concept || !scenario || !choice || !consequence) {
-      return res.status(400).json({ error: "Missing required parameters." });
+      res.status(400).json({ error: "Missing required parameters." });
+      return;
     }
 
     const ai = getAiClient();
