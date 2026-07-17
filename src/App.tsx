@@ -3,29 +3,32 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from "react";
-import { 
-  Coins, 
-  ShieldCheck, 
-  Users, 
-  BookOpen, 
-  Award, 
-  ArrowRight, 
-  RefreshCw, 
-  Briefcase, 
-  TrendingUp, 
-  GraduationCap, 
-  Sparkles, 
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Coins,
+  ShieldCheck,
+  Users,
+  BookOpen,
+  Award,
+  ArrowRight,
+  RefreshCw,
+  Briefcase,
+  TrendingUp,
+  GraduationCap,
+  Sparkles,
   Info,
   HelpCircle,
   X,
   UserCheck,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  QrCode,
+  Volume2,
+  VolumeX
 } from "lucide-react";
-import { CHARACTERS, CHAPTERS, BADGES, determineEnding, ENDINGS } from "./data";
-import { Character, GameState, GameStats, Option } from "./types";
-import { playSound } from "./audio";
+import { CHARACTERS, CHAPTERS, BADGES, determineEnding, ENDINGS } from "./data/data";
+import { Character, GameState, GameStats, Option } from "./types/types";
+import { playSound, setMuted } from "./utils/audio";
 
 export default function App() {
   // Application states
@@ -44,13 +47,36 @@ export default function App() {
   const [difficultyFilter, setDifficultyFilter] = useState<number | null>(null);
   const [selectedCharPreview, setSelectedCharPreview] = useState<Character | null>(CHARACTERS[0]);
   const [showGlossaryModal, setShowGlossaryModal] = useState<boolean>(false);
+  const [showQrModal, setShowQrModal] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (gameState.gameState === "STORY" && !isMuted && audioRef.current) {
+      audioRef.current.play().catch(() => { });
+    }
+  }, [gameState.gameState, isMuted]);
+
+  const toggleMute = () => {
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    setMuted(newMuted);
+    if (audioRef.current) {
+      if (newMuted) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(e => console.log("Audio play blocked", e));
+      }
+    }
+  };
+
   const [lastSelectedOption, setLastSelectedOption] = useState<Option | null>(null);
   const [statChanges, setStatChanges] = useState<Partial<GameStats> | null>(null);
 
   // Auto-unlock badges as knowledge level increases
   useEffect(() => {
     if (!gameState.character) return;
-    
+
     const newBadges = [...gameState.badges];
     let updated = false;
 
@@ -80,6 +106,13 @@ export default function App() {
     });
     setLastSelectedOption(null);
     setStatChanges(null);
+
+    // Automatically unmute when the user clicks "Start Game" (user interaction allows autoplay)
+    setIsMuted(false);
+    setMuted(false);
+    if (audioRef.current) {
+      audioRef.current.play().catch(e => console.log("Auto-play blocked", e));
+    }
   };
 
   // Handle making a decision
@@ -91,33 +124,19 @@ export default function App() {
 
     const scenarioData = currentChapterData.getScenario(gameState.character);
 
-    // Track the changes visually
+    // 1. Immediately transition to DECISION_RESULT with loading state
     setLastSelectedOption(option);
-    setStatChanges(option.statsEffect);
-
-    if (option.statsEffect.money) {
-      if (option.statsEffect.money > 0) {
-        playSound('success');
-      } else {
-        playSound('error');
-      }
-    }
-
-    // Apply stats effects
-    const newStats = { ...gameState.stats };
-    Object.entries(option.statsEffect).forEach(([key, val]) => {
-      const k = key as keyof GameStats;
-      newStats[k] = Math.max(0, newStats[k] + (val || 0));
-    });
+    setStatChanges(null); // Clear previous visual changes to build suspense
 
     setGameState(prev => ({
       ...prev,
-      stats: newStats,
       aiLoading: true,
+      currentAiFeedback: "",
       gameState: "DECISION_RESULT"
     }));
 
-    // Call server API for Professor AI Feedback
+    // 2. Fetch AI feedback
+    let feedbackResult = "";
     try {
       const response = await fetch("/api/ai/feedback", {
         method: "POST",
@@ -136,25 +155,42 @@ export default function App() {
 
       if (response.ok) {
         const data = await response.json();
-        setGameState(prev => ({
-          ...prev,
-          currentAiFeedback: data.feedback,
-          aiLoading: false
-        }));
+        feedbackResult = data.feedback;
       } else {
         throw new Error("Failed to fetch feedback");
       }
     } catch (err) {
       console.error(err);
       // Fallback content in case API is offline or key is missing
-      setGameState(prev => ({
-        ...prev,
-        currentAiFeedback: `[Giáo sư AI phản hồi]: Quyết định này minh họa sâu sắc khái niệm "${currentChapterData.concept}". ` +
-          `Lựa chọn của bạn đã trực tiếp tác động lên các thuộc tính hàng hóa và dịch vụ của bạn. Hãy ghi nhớ rằng trong bất kỳ chế độ kinh tế nào, ` +
-          `việc tối ưu chi phí lao động cá biệt so với hao phí lao động xã hội cần thiết luôn là chìa khóa để giành lợi thế cạnh tranh!`,
-        aiLoading: false
-      }));
+      feedbackResult = `[Giáo sư AI phản hồi]: Quyết định này minh họa sâu sắc khái niệm "${currentChapterData.concept}". ` +
+        `Lựa chọn của bạn đã trực tiếp tác động lên các thuộc tính hàng hóa và dịch vụ của bạn. Hãy ghi nhớ rằng trong bất kỳ chế độ kinh tế nào, ` +
+        `việc tối ưu chi phí lao động cá biệt so với hao phí lao động xã hội cần thiết luôn là chìa khóa để giành lợi thế cạnh tranh!`;
     }
+
+    // 3. Play sound based on money effect
+    if (option.statsEffect.money) {
+      if (option.statsEffect.money > 0) {
+        playSound('success');
+      } else {
+        playSound('error');
+      }
+    }
+
+    // 4. Calculate new stats
+    const newStats = { ...gameState.stats };
+    Object.entries(option.statsEffect).forEach(([key, val]) => {
+      const k = key as keyof GameStats;
+      newStats[k] = Math.max(0, newStats[k] + (val || 0));
+    });
+
+    // 5. Update state to reveal everything at once
+    setStatChanges(option.statsEffect); // Triggers visual float animations in header and consequence tags
+    setGameState(prev => ({
+      ...prev,
+      stats: newStats,
+      currentAiFeedback: feedbackResult,
+      aiLoading: false
+    }));
   };
 
   // Proceed to next chapter or ending
@@ -172,7 +208,7 @@ export default function App() {
       // Save to history
       const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
       const scenarioData = currentChapterData?.getScenario(gameState.character!);
-      
+
       const newHistoryItem = {
         chapter: gameState.currentChapter,
         scenario: scenarioData?.question || "",
@@ -194,7 +230,7 @@ export default function App() {
       // Game ended successfully
       const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
       const scenarioData = currentChapterData?.getScenario(gameState.character!);
-      
+
       const newHistoryItem = {
         chapter: gameState.currentChapter,
         scenario: scenarioData?.question || "",
@@ -241,7 +277,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#1A1A1A] font-sans flex flex-col selection:bg-[#991B1B]/20 selection:text-[#991B1B]">
-      
+      <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" />
+
       {/* HEADER */}
       <header className="bg-[#991B1B] text-white flex flex-col md:flex-row items-center justify-between px-6 py-4 shadow-md border-b-4 border-[#1A1A1A] relative z-20">
         <div className="flex items-center gap-4 mb-3 md:mb-0 cursor-pointer" onClick={handleRestart}>
@@ -250,7 +287,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-2xl font-black uppercase tracking-tighter  leading-none">Marx Story</h1>
-            <p className="text-[12px] uppercase tracking-[0.2em] font-medium opacity-85 ">Hành trình Kinh tế Chính trị Mác - Lênin</p>
+            <p className="text-sm uppercase tracking-[0.2em] font-medium opacity-85 ">Hành trình Kinh tế Chính trị Mác - Lênin</p>
           </div>
         </div>
 
@@ -258,18 +295,18 @@ export default function App() {
           <div className="flex flex-wrap gap-4 md:gap-8 items-center justify-center">
             {/* Chapter Progress */}
             <div className="flex flex-col items-center md:items-end">
-              <span className="text-[12px] uppercase font-bold text-red-200">Chương {gameState.currentChapter} / 7</span>
+              <span className="text-sm uppercase font-bold text-red-200">Chương {gameState.currentChapter} / 7</span>
               <span className="text-xs   text-white line-clamp-1 max-w-[180px] md:max-w-[280px]">
                 {currentChapterData?.concept}
               </span>
             </div>
-            
+
             <div className="hidden md:block h-8 w-[1px] bg-white/30"></div>
 
             {/* Live Stats */}
             <div className="flex gap-4 md:gap-6 bg-black/20 px-4 py-2 rounded-md border border-white/10">
               <div className="text-center group relative">
-                <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
+                <p className="text-xs uppercase text-red-200 flex items-center justify-center gap-1">
                   <Coins className="w-3 h-3 text-amber-400" /> Vốn
                 </p>
                 <p className="font-bold font-mono text-sm md:text-base relative">
@@ -283,7 +320,7 @@ export default function App() {
               </div>
 
               <div className="text-center group relative">
-                <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
+                <p className="text-xs uppercase text-red-200 flex items-center justify-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-emerald-400" /> Uy tín
                 </p>
                 <p className="font-bold font-mono text-sm md:text-base relative">
@@ -297,7 +334,7 @@ export default function App() {
               </div>
 
               <div className="text-center group relative">
-                <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
+                <p className="text-xs uppercase text-red-200 flex items-center justify-center gap-1">
                   <Users className="w-3 h-3 text-sky-400" /> Khách
                 </p>
                 <p className="font-bold font-mono text-sm md:text-base relative">
@@ -311,7 +348,7 @@ export default function App() {
               </div>
 
               <div className="text-center group relative">
-                <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
+                <p className="text-xs uppercase text-red-200 flex items-center justify-center gap-1">
                   <Briefcase className="w-3 h-3 text-purple-400" /> N.viên
                 </p>
                 <p className="font-bold font-mono text-sm md:text-base relative">
@@ -325,7 +362,7 @@ export default function App() {
               </div>
 
               <div className="text-center group relative">
-                <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
+                <p className="text-xs uppercase text-red-200 flex items-center justify-center gap-1">
                   <BookOpen className="w-3 h-3 text-yellow-300" /> Tri thức
                 </p>
                 <p className="font-bold font-mono text-sm md:text-base text-yellow-300 relative">
@@ -342,7 +379,21 @@ export default function App() {
         )}
 
         <div className="flex gap-3 mt-3 md:mt-0">
-          <button 
+          <button
+            onClick={toggleMute}
+            className="px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-sm transition-colors text-white flex items-center justify-center"
+            title={isMuted ? "Mở âm thanh" : "Tắt âm thanh"}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={() => setShowQrModal(true)}
+            className="px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold uppercase tracking-wider rounded-sm transition-all flex items-center gap-1.5"
+            id="qr-btn"
+          >
+            <QrCode className="w-3.5 h-3.5" /> Mã QR
+          </button>
+          <button
             onClick={() => setShowGlossaryModal(true)}
             className="px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold uppercase tracking-wider rounded-sm transition-all flex items-center gap-1.5"
             id="glossary-btn"
@@ -363,8 +414,8 @@ export default function App() {
       )}
 
       {/* GAME AREA */}
-      <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        
+      <main className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
+
         {/* LEFT PANEL: Selected Character & Stats Progress (Show only when playing) */}
         {gameState.character && gameState.gameState !== "SELECT_CHARACTER" && (
           <aside className="w-full md:w-[360px] bg-[#E8E6E1] border-b-2 md:border-b-0 md:border-r-2 border-[#1A1A1A] p-5 flex flex-col justify-between overflow-y-auto">
@@ -377,28 +428,28 @@ export default function App() {
                     {gameState.character.avatar}
                   </div>
                   <div>
-                    <span className="text-[9px] uppercase font-bold tracking-wider text-[#991B1B] bg-white px-1.5 py-0.5 border border-[#1A1A1A] rounded-sm">
+                    <span className="text-xs uppercase font-bold tracking-wider text-[#991B1B] bg-white px-1.5 py-0.5 border border-[#1A1A1A] rounded-sm">
                       Nhân vật
                     </span>
                     <h2 className="text-xl  font-bold  text-[#1A1A1A] mt-1">{gameState.character.name}</h2>
                     <p className="text-xs font-semibold opacity-75">{gameState.character.title}</p>
                   </div>
                 </div>
-                
+
                 <div className="px-4 pb-4 pt-1 border-t border-[#1A1A1A]/20 bg-[#F5F5F0]/50">
                   <p className="text-xs text-[#1A1A1A]/80   mb-2 leading-relaxed">
                     "{gameState.character.description}"
                   </p>
-                  <p className="text-[12px] uppercase font-bold text-[#1A1A1A]/60">Ngành nghề: <span className="text-[#1A1A1A] lowercase font-medium">{gameState.character.businessType}</span></p>
+                  <p className="text-sm uppercase font-bold text-[#1A1A1A]/60">Ngành nghề: <span className="text-[#1A1A1A] lowercase font-medium">{gameState.character.businessType}</span></p>
                 </div>
               </div>
 
               {/* Character strengths & challenges */}
               <div className="p-3.5 bg-white border-2 border-[#1A1A1A] rounded-sm shadow-[4px_4px_0px_#991B1B]">
-                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#991B1B] mb-1.5">Ưu thế kinh doanh</h4>
+                <h4 className="text-sm font-black uppercase tracking-wider text-[#991B1B] mb-1.5">Ưu thế kinh doanh</h4>
                 <p className="text-xs font-medium text-[#1A1A1A] mb-3">✓ {gameState.character.strengths}</p>
-                
-                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#1A1A1A] mb-1.5">Thách thức đối mặt</h4>
+
+                <h4 className="text-sm font-black uppercase tracking-wider text-[#1A1A1A] mb-1.5">Thách thức đối mặt</h4>
                 <ul className="text-xs text-[#1A1A1A]/80 space-y-1">
                   {gameState.character.challenges.map((challenge, idx) => (
                     <li key={idx} className="flex items-start gap-1">
@@ -411,19 +462,19 @@ export default function App() {
 
               {/* Educational Glossary helper in panel */}
               <div className="p-3.5 bg-[#FAF9F5] border-2 border-dashed border-[#1A1A1A] rounded-sm">
-                <h4 className="text-[11px] font-black uppercase tracking-widest text-[#1A1A1A] flex items-center gap-1 mb-2">
+                <h4 className="text-sm font-black uppercase tracking-widest text-[#1A1A1A] flex items-center gap-1 mb-2">
                   <Info className="w-3.5 h-3.5 text-[#991B1B]" /> Ghi chú học tập
                 </h4>
                 <div className="space-y-2">
-                  <div className="text-[11px] border-b border-[#1A1A1A]/10 pb-1.5">
+                  <div className="text-sm border-b border-[#1A1A1A]/10 pb-1.5">
                     <span className="font-bold text-[#991B1B]">Tư bản bất biến (C):</span>
                     <p className="text-[#1A1A1A]/80">Bộ phận tư bản biến thành tư liệu sản xuất (nhà xưởng, máy móc, nguyên liệu) giá trị không đổi.</p>
                   </div>
-                  <div className="text-[11px] border-b border-[#1A1A1A]/10 pb-1.5">
+                  <div className="text-sm border-b border-[#1A1A1A]/10 pb-1.5">
                     <span className="font-bold text-[#991B1B]">Tư bản khả biến (V):</span>
                     <p className="text-[#1A1A1A]/80">Bộ phận tư bản biến thành sức lao động, giá trị tăng thêm tạo ra thặng dư.</p>
                   </div>
-                  <div className="text-[11px]">
+                  <div className="text-sm">
                     <span className="font-bold text-red-700">Giá trị thặng dư (m):</span>
                     <p className="text-[#1A1A1A]/80">Bộ phận giá trị mới do lao động sống của công nhân tạo ra dôi ra ngoài giá trị sức lao động.</p>
                   </div>
@@ -433,25 +484,24 @@ export default function App() {
 
             {/* Badges unlocked */}
             <div className="mt-5 border-t border-[#1A1A1A]/20 pt-4">
-              <p className="text-[12px] uppercase font-black tracking-widest mb-2.5 text-[#1A1A1A]/60 flex items-center gap-1">
+              <p className="text-sm uppercase font-black tracking-widest mb-2.5 text-[#1A1A1A]/60 flex items-center gap-1">
                 <Award className="w-3.5 h-3.5 text-[#991B1B]" /> Huy chương đạt được ({gameState.badges.length})
               </p>
               <div className="flex flex-wrap gap-2">
                 {BADGES.map((badge) => {
                   const isUnlocked = gameState.badges.includes(badge.id);
                   return (
-                    <div 
+                    <div
                       key={badge.id}
-                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all group relative cursor-help ${
-                        isUnlocked 
-                          ? "border-[#991B1B] bg-white text-xl shadow-[2px_2px_0px_#1A1A1A]" 
+                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all group relative cursor-help ${isUnlocked
+                          ? "border-[#991B1B] bg-white text-xl shadow-[2px_2px_0px_#1A1A1A]"
                           : "border-gray-300 bg-gray-100 text-gray-400 opacity-40 grayscale"
-                      }`}
+                        }`}
                       title={`${badge.name}: ${badge.description} (${isUnlocked ? "Đã mở" : `Yêu cầu Tri thức >= ${badge.unlockedAtKnowledge}`})`}
                     >
                       <span>{badge.icon}</span>
                       {/* Tooltip */}
-                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block w-48 bg-[#1A1A1A] text-white text-[12px] rounded p-2 z-30 shadow-lg pointer-events-none">
+                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block w-48 bg-[#1A1A1A] text-white text-sm rounded p-2 z-30 shadow-lg pointer-events-none">
                         <p className="font-bold text-[#FFA500]">{badge.name}</p>
                         <p className="text-gray-300 mt-0.5">{badge.description}</p>
                         <p className="text-gray-400 mt-1 ">
@@ -472,7 +522,7 @@ export default function App() {
           {/* SCREEN 1: CHARACTER SELECTION */}
           {gameState.gameState === "SELECT_CHARACTER" && (
             <div className="max-w-5xl mx-auto w-full space-y-6">
-              
+
               {/* Introduction Banner */}
               <div className="bg-white border-2 border-[#1A1A1A] p-6 shadow-[8px_8px_0px_#1A1A1A] text-center space-y-3 rounded-sm relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-[#991B1B]"></div>
@@ -483,26 +533,26 @@ export default function App() {
                   Khởi nghiệp qua lăng kính Kinh tế Chính trị
                 </h2>
                 <p className="text-sm text-[#1A1A1A]/80 max-w-2xl mx-auto leading-relaxed">
-                  Nhập vai vào một trong 10 nhân vật đại diện cho các lĩnh vực sản xuất & dịch vụ thực tế. 
+                  Nhập vai vào một trong 20 nhân vật đại diện cho các lĩnh vực sản xuất & dịch vụ thực tế.
                   Trải nghiệm 7 chương của môn học Kinh tế chính trị Mác - Lênin qua các quyết định sống còn giúp doanh nghiệp phát triển bền vững hoặc phá sản!
                 </p>
               </div>
 
               {/* Character selector layout */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
+
                 {/* Selector list */}
                 <div className="lg:col-span-7 space-y-4">
                   <div className="flex items-center justify-between border-b-2 border-[#1A1A1A] pb-2">
                     <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
                       <span className="w-2.5 h-2.5 bg-[#991B1B] block"></span> Chọn nhân vật của bạn
                     </h3>
-                    
+
                     {/* Difficulty filters */}
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-semibold opacity-70">Độ khó:</span>
-                      <select 
-                        value={difficultyFilter || ""} 
+                      <select
+                        value={difficultyFilter || ""}
                         onChange={(e) => setDifficultyFilter(e.target.value ? Number(e.target.value) : null)}
                         className="text-xs bg-white border border-[#1A1A1A] px-2 py-1 rounded-sm font-medium focus:outline-none"
                       >
@@ -525,19 +575,18 @@ export default function App() {
                           <button
                             key={char.id}
                             onClick={() => setSelectedCharPreview(char)}
-                            className={`p-3 text-left border-2 rounded-sm transition-all flex items-center gap-3 relative ${
-                              isSelected 
-                                ? "bg-white border-[#991B1B] shadow-[4px_4px_0px_#1A1A1A] scale-[1.01]" 
+                            className={`p-3 text-left border-2 rounded-sm transition-all flex items-center gap-3 relative ${isSelected
+                                ? "bg-white border-[#991B1B] shadow-[4px_4px_0px_#1A1A1A] scale-[1.01]"
                                 : "bg-[#E8E6E1]/50 border-[#1A1A1A]/30 hover:border-[#1A1A1A] hover:bg-white"
-                            }`}
+                              }`}
                           >
                             <div className="w-10 h-10 bg-[#FAF9F5] border border-[#1A1A1A] rounded-full flex items-center justify-center text-2xl shadow-[1px_1px_0px_#1A1A1A]">
                               {char.avatar}
                             </div>
                             <div className="min-w-0">
                               <h4 className="font-bold text-xs truncate text-[#1A1A1A]">{char.name}</h4>
-                              <p className="text-[12px] text-gray-500 truncate">{char.title}</p>
-                              <div className="flex text-[9px] text-[#991B1B] mt-0.5 font-bold">
+                              <p className="text-sm text-gray-500 truncate">{char.title}</p>
+                              <div className="flex text-xs text-[#991B1B] mt-0.5 font-bold">
                                 {"★".repeat(char.difficulty)}
                                 {"☆".repeat(5 - char.difficulty)}
                               </div>
@@ -574,26 +623,26 @@ export default function App() {
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2 text-[11px]">
+                        <div className="grid grid-cols-2 gap-2 text-sm">
                           <div className="border border-[#1A1A1A]/15 p-2 rounded-sm bg-[#E8E6E1]/20">
-                            <span className="font-bold block text-gray-500 uppercase text-[9px]">💰 Vốn ban đầu</span>
+                            <span className="font-bold block text-gray-500 uppercase text-xs">💰 Vốn ban đầu</span>
                             <span className="text-sm font-bold font-mono">{selectedCharPreview.baseStats.money} triệu VNĐ</span>
                           </div>
                           <div className="border border-[#1A1A1A]/15 p-2 rounded-sm bg-[#E8E6E1]/20">
-                            <span className="font-bold block text-gray-500 uppercase text-[9px]">👨‍💼 Đội ngũ ban đầu</span>
+                            <span className="font-bold block text-gray-500 uppercase text-xs">👨‍💼 Đội ngũ ban đầu</span>
                             <span className="text-sm font-bold font-mono">{selectedCharPreview.baseStats.staff} nhân viên</span>
                           </div>
                         </div>
 
                         <div className="space-y-1 text-xs">
-                          <p className="font-bold text-[#991B1B] uppercase text-[9px] tracking-wider">Lợi thế đặc trưng:</p>
+                          <p className="font-bold text-[#991B1B] uppercase text-xs tracking-wider">Lợi thế đặc trưng:</p>
                           <p className="font-medium text-gray-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-sm">
                             ✓ {selectedCharPreview.strengths}
                           </p>
                         </div>
 
                         <div className="space-y-1 text-xs">
-                          <p className="font-bold text-gray-500 uppercase text-[9px] tracking-wider">Thách thức khó khăn:</p>
+                          <p className="font-bold text-gray-500 uppercase text-xs tracking-wider">Thách thức khó khăn:</p>
                           <div className="space-y-1 pl-1">
                             {selectedCharPreview.challenges.slice(0, 2).map((ch, idx) => (
                               <p key={idx} className="text-gray-600 flex items-center gap-1.5">
@@ -622,7 +671,7 @@ export default function App() {
           {/* SCREEN 2: SCENARIO STORY & DECISION MAKING */}
           {gameState.gameState === "STORY" && gameState.character && currentScenario && (
             <div className="max-w-3xl mx-auto w-full space-y-6">
-              
+
               {/* Scenario Context header */}
               <div className="flex items-center gap-2 text-[#991B1B] font-bold text-xs uppercase tracking-widest bg-red-50 py-1.5 px-3 rounded-sm border border-red-200 w-fit">
                 <Sparkles className="w-3.5 h-3.5 animate-pulse" /> Chương {gameState.currentChapter}: {currentChapterData?.title.split(": ")[1]}
@@ -634,14 +683,14 @@ export default function App() {
                   <span className="w-3 h-3 bg-[#991B1B]"></span>
                   <h3 className="font-black text-xs uppercase tracking-widest text-gray-500">Tình huống giả định</h3>
                 </div>
-                
+
                 <p className="text-lg md:text-xl  text-[#1A1A1A] leading-relaxed  first-letter:text-4xl first-letter:font-bold first-letter:text-[#991B1B] first-letter:float-left first-letter:mr-2">
                   {currentScenario.intro}
                 </p>
 
                 {/* Scenario Illustration Dynamic helper */}
                 <div className="bg-[#FAF9F5] border border-[#1A1A1A]/10 p-3 rounded-sm text-center flex flex-col justify-center items-center space-y-1">
-                  <p className="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Mô tả quy luật liên quan</p>
+                  <p className="text-xs uppercase tracking-wider text-gray-400 font-bold">Mô tả quy luật liên quan</p>
                   <p className="text-xs   text-gray-600">
                     "{currentChapterData?.concept}"
                   </p>
@@ -653,7 +702,7 @@ export default function App() {
                 <h4 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] mb-2">
                   ❓ Quyết định của bạn là gì?
                 </h4>
-                
+
                 <div className="grid grid-cols-1 gap-3.5">
                   {currentScenario.options.map((option, idx) => {
                     const optionLetter = idx === 0 ? "A" : "B";
@@ -682,7 +731,7 @@ export default function App() {
           {/* SCREEN 3: DECISION RESULT & AI FEEDBACK */}
           {gameState.gameState === "DECISION_RESULT" && gameState.character && lastSelectedOption && (
             <div className="max-w-3xl mx-auto w-full space-y-6">
-              
+
               {/* Consequence card */}
               <div className="bg-white border-2 border-[#1A1A1A] p-6 shadow-[8px_8px_0px_#1A1A1A] rounded-sm space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b-2 border-dashed border-[#1A1A1A]/20">
@@ -690,7 +739,7 @@ export default function App() {
                     <span className="w-2.5 h-2.5 rounded-full bg-[#991B1B]"></span>
                     <h3 className="font-black text-xs uppercase tracking-widest text-[#991B1B]">Kết quả kinh doanh</h3>
                   </div>
-                  
+
                   {/* Visually dynamic show effects */}
                   <div className="flex gap-2">
                     {statChanges && Object.entries(statChanges).map(([key, value]) => {
@@ -698,13 +747,12 @@ export default function App() {
                       const isPositive = (value as number) > 0;
                       const iconMap: Record<string, string> = { money: "💰", reputation: "❤️", customers: "😊", staff: "👨‍💼", knowledge: "📚" };
                       return (
-                        <span 
-                          key={key} 
-                          className={`text-[12px] font-bold px-2 py-0.5 rounded-full border ${
-                            isPositive 
-                              ? "bg-emerald-50 border-emerald-300 text-emerald-700" 
+                        <span
+                          key={key}
+                          className={`text-sm font-bold px-2 py-0.5 rounded-full border ${isPositive
+                              ? "bg-emerald-50 border-emerald-300 text-emerald-700"
                               : "bg-rose-50 border-rose-300 text-rose-700"
-                          }`}
+                            }`}
                         >
                           {iconMap[key]} {isPositive ? `+${value}` : value}
                         </span>
@@ -729,12 +777,12 @@ export default function App() {
                       <GraduationCap className="w-5 h-5 text-[#991B1B]" />
                     </div>
                     <div>
-                      <h4 className="text-[11px] font-black uppercase tracking-widest text-red-400">Giảng dạy từ Giáo sư AI</h4>
-                      <p className="text-[12px] text-gray-400 font-medium">Kinh tế chính trị Mác - Lênin trực quan</p>
+                      <h4 className="text-sm font-black uppercase tracking-widest text-red-400">Giảng dạy từ Giáo sư AI</h4>
+                      <p className="text-sm text-gray-400 font-medium">Kinh tế chính trị Mác - Lênin trực quan</p>
                     </div>
                   </div>
                   {gameState.aiLoading && (
-                    <span className="text-[12px] bg-red-900/40 text-red-300 border border-red-700/50 px-2 py-0.5 rounded animate-pulse">
+                    <span className="text-sm bg-red-900/40 text-red-300 border border-red-700/50 px-2 py-0.5 rounded animate-pulse">
                       Đang phân tích dữ liệu...
                     </span>
                   )}
@@ -759,7 +807,7 @@ export default function App() {
                     <div className="bg-white/5 border border-white/10 p-3 rounded-sm flex items-start gap-2.5">
                       <Info className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-[12px] uppercase font-bold text-gray-400">Khái niệm cốt lõi:</span>
+                        <span className="text-sm uppercase font-bold text-gray-400">Khái niệm cốt lõi:</span>
                         <p className="text-xs text-gray-300  ">
                           {lastSelectedOption.marxTheory}
                         </p>
@@ -784,13 +832,13 @@ export default function App() {
           {/* SCREEN 4: GAME OVER / ENDING */}
           {gameState.gameState === "ENDING" && gameState.character && finalEnding && (
             <div className="max-w-4xl mx-auto w-full space-y-6">
-              
+
               {/* Ending Illustration Big Card */}
               <div className={`bg-gradient-to-br ${finalEnding.bgGradient} border-4 border-[#1A1A1A] p-6 md:p-8 shadow-[10px_10px_0px_#1A1A1A] rounded-sm text-center relative overflow-hidden`}>
                 <div className="absolute top-4 right-4 text-6xl md:text-8xl opacity-15 pointer-events-none select-none">
                   {finalEnding.illustration}
                 </div>
-                
+
                 <span className="text-xs uppercase font-black tracking-[0.3em] bg-white border border-[#1A1A1A] text-[#1A1A1A] px-3 py-1 rounded-sm shadow-[2px_2px_0px_#1A1A1A] inline-block mb-4">
                   KẾT THÚC CÂU CHUYỆN
                 </span>
@@ -806,7 +854,7 @@ export default function App() {
 
               {/* final Stats and review */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
+
                 {/* Scoreboard stats */}
                 <div className="bg-white border-2 border-[#1A1A1A] p-5 shadow-[6px_6px_0px_#1A1A1A] rounded-sm space-y-4">
                   <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] border-b border-[#1A1A1A]/10 pb-2 flex items-center gap-2">
@@ -815,35 +863,35 @@ export default function App() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[12px] text-gray-500 block uppercase font-bold">💰 Vốn doanh nghiệp</span>
+                      <span className="text-sm text-gray-500 block uppercase font-bold">💰 Vốn doanh nghiệp</span>
                       <strong className="text-lg font-mono text-[#1A1A1A]">{gameState.stats.money} triệu VNĐ</strong>
                     </div>
 
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[12px] text-gray-500 block uppercase font-bold">❤️ Uy tín thương hiệu</span>
+                      <span className="text-sm text-gray-500 block uppercase font-bold">❤️ Uy tín thương hiệu</span>
                       <strong className="text-lg font-mono text-[#1A1A1A]">{gameState.stats.reputation}%</strong>
                     </div>
 
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[12px] text-gray-500 block uppercase font-bold">😊 Lượng khách hàng</span>
+                      <span className="text-sm text-gray-500 block uppercase font-bold">😊 Lượng khách hàng</span>
                       <strong className="text-lg font-mono text-[#1A1A1A]">{gameState.stats.customers}%</strong>
                     </div>
 
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[12px] text-gray-500 block uppercase font-bold">📚 Tri thức Mác - Lênin</span>
+                      <span className="text-sm text-gray-500 block uppercase font-bold">📚 Tri thức Mác - Lênin</span>
                       <strong className="text-lg font-mono text-[#991B1B]">{gameState.stats.knowledge} / 100</strong>
                     </div>
                   </div>
 
                   <div className="bg-[#FAF9F5] border border-dashed border-[#1A1A1A]/20 p-3 rounded-sm text-center">
-                    <p className="text-[12px] text-gray-500 uppercase font-black tracking-wider">Huy chương thu thập</p>
+                    <p className="text-sm text-gray-500 uppercase font-black tracking-wider">Huy chương thu thập</p>
                     <div className="flex justify-center gap-2 mt-2">
                       {gameState.badges.length === 0 ? (
                         <p className="text-xs text-gray-400  ">Bạn chưa thu được huy chương nào lần này.</p>
                       ) : (
                         BADGES.filter(b => gameState.badges.includes(b.id)).map(badge => (
-                          <span 
-                            key={badge.id} 
+                          <span
+                            key={badge.id}
                             className="text-2xl cursor-help relative group"
                             title={`${badge.name}: ${badge.description}`}
                           >
@@ -861,7 +909,7 @@ export default function App() {
                     <h3 className="text-xs font-black uppercase tracking-widest text-[#991B1B] border-b border-[#1A1A1A]/15 pb-2">
                       📜 Nhật ký hành trình
                     </h3>
-                    
+
                     <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
                       {gameState.history.map((hist, idx) => (
                         <div key={idx} className="text-xs border-b border-gray-200 pb-2">
@@ -887,22 +935,22 @@ export default function App() {
           {/* FOOTER */}
           <footer className="mt-8 pt-4 border-t-2 border-[#1A1A1A] flex flex-col md:flex-row justify-between items-center text-center gap-3">
             <div className="flex flex-wrap justify-center gap-4">
-              <button 
+              <button
                 onClick={() => handleRestart()}
-                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-[12px] font-bold uppercase tracking-wider rounded-sm transition-all"
+                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-sm font-bold uppercase tracking-wider rounded-sm transition-all"
                 id="footer-character-select"
               >
                 Chọn Nhân Vật
               </button>
-              <button 
+              <button
                 onClick={() => setShowGlossaryModal(true)}
-                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-[12px] font-bold uppercase tracking-wider rounded-sm transition-all"
+                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-sm font-bold uppercase tracking-wider rounded-sm transition-all"
                 id="footer-syllabus"
               >
                 Giáo Trình Học Tập
               </button>
             </div>
-            <p className="text-[12px] font-bold uppercase tracking-[0.2em] opacity-55  text-[#1A1A1A]">
+            <p className="text-sm font-bold uppercase tracking-[0.2em] opacity-55  text-[#1A1A1A]">
               Bản quyền &copy; 2026 Marx Story Team • Chuyên đề Giáo dục đổi mới
             </p>
           </footer>
@@ -916,18 +964,41 @@ export default function App() {
         </svg>
       </div>
 
+      {/* MODAL: QR CODE */}
+      {showQrModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in" onClick={() => setShowQrModal(false)}>
+          <div className="bg-[#F5F5F0] border-4 border-[#1A1A1A] w-full max-w-sm flex flex-col shadow-[12px_12px_0px_#991B1B] rounded-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="bg-[#991B1B] text-white p-4 flex justify-between items-center border-b-2 border-[#1A1A1A]">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-5 h-5" />
+                <h3 className="font-black text-lg uppercase">Mã QR Website</h3>
+              </div>
+              <button onClick={() => setShowQrModal(false)} className="text-white hover:text-red-200 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 flex flex-col items-center justify-center space-y-4">
+              <p className="text-sm text-center font-medium text-gray-700">Quét mã QR dưới đây để chia sẻ trang web <br /><span className="text-[#991B1B] font-bold">https://maxr-story.vercel.app/</span></p>
+              <div className="p-4 bg-white border-2 border-[#1A1A1A] rounded-sm flex items-center justify-center">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://maxr-story.vercel.app/" alt="QR Code" className="w-48 h-48" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODAL: EDUCATION SYLLABUS & GLOSSARY */}
       {showGlossaryModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in" id="glossary-modal">
           <div className="bg-[#F5F5F0] border-4 border-[#1A1A1A] w-full max-w-3xl max-h-[85vh] flex flex-col shadow-[12px_12px_0px_#991B1B] rounded-sm overflow-hidden">
-            
+
             {/* Modal header */}
             <div className="bg-[#991B1B] text-white p-4 flex justify-between items-center border-b-2 border-[#1A1A1A]">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
                 <h3 className=" font-black  text-lg uppercase">Giáo trình Tóm tắt: Kinh tế Chính trị Mác - Lênin</h3>
               </div>
-              <button 
+              <button
                 onClick={() => setShowGlossaryModal(false)}
                 className="p-1 hover:bg-white/20 rounded transition-colors text-white"
               >
@@ -937,22 +1008,22 @@ export default function App() {
 
             {/* Modal content body */}
             <div className="p-6 overflow-y-auto space-y-6">
-              
+
               <div className="bg-white p-4 border border-[#1A1A1A]/15 rounded-sm">
                 <h4 className=" font-black  text-red-700 text-sm mb-2">Lời giới thiệu</h4>
                 <p className="text-xs text-gray-700 leading-relaxed  ">
-                  Kinh tế chính trị Mác - Lênin không phải là những trang lý thuyết hàn lâm nằm ngủ yên trong giáo trình. 
-                  Đó là các quy luật khách quan chi phối trực tiếp mọi hoạt động sản xuất, trao đổi, và lưu thông hàng hóa trên thị trường mà hàng ngày chúng ta đang tham gia. 
+                  Kinh tế chính trị Mác - Lênin không phải là những trang lý thuyết hàn lâm nằm ngủ yên trong giáo trình.
+                  Đó là các quy luật khách quan chi phối trực tiếp mọi hoạt động sản xuất, trao đổi, và lưu thông hàng hóa trên thị trường mà hàng ngày chúng ta đang tham gia.
                   Hãy dùng cẩm nang này làm kim chỉ nam để giải quyết các chương trong game!
                 </p>
               </div>
 
               <div className="space-y-4">
-                
+
                 <div className="border-l-4 border-[#991B1B] pl-3 py-1">
                   <h5 className="font-bold text-xs uppercase text-[#1A1A1A]">Chương 1: Đối tượng và phương pháp nghiên cứu</h5>
                   <p className="text-xs text-gray-600 mt-1">
-                    Nghiên cứu quan hệ sản xuất trong sự tác động qua lại với lực lượng sản xuất và kiến trúc thượng tầng. 
+                    Nghiên cứu quan hệ sản xuất trong sự tác động qua lại với lực lượng sản xuất và kiến trúc thượng tầng.
                     Phương pháp chủ đạo là <strong>Trừu tượng hóa khoa học</strong> - loại bỏ các hiện tượng ngẫu nhiên bên ngoài để nắm bắt quy luật bản chất bên trong thị trường.
                   </p>
                 </div>
@@ -960,7 +1031,7 @@ export default function App() {
                 <div className="border-l-4 border-[#991B1B] pl-3 py-1">
                   <h5 className="font-bold text-xs uppercase text-[#1A1A1A]">Chương 2: Hàng hóa, thị trường và vai trò các chủ thể</h5>
                   <p className="text-xs text-gray-600 mt-1">
-                    Hàng hóa có 2 thuộc tính: <strong>Giá trị sử dụng</strong> (công dụng thỏa mãn nhu cầu) và <strong>Giá trị</strong> (lao động xã hội kết tinh). 
+                    Hàng hóa có 2 thuộc tính: <strong>Giá trị sử dụng</strong> (công dụng thỏa mãn nhu cầu) và <strong>Giá trị</strong> (lao động xã hội kết tinh).
                     Lượng giá trị hàng hóa đo bằng <strong>Thời gian lao động xã hội cần thiết</strong>. Doanh nghiệp muốn thắng thế phải giảm hao phí lao động cá biệt của mình.
                   </p>
                 </div>
@@ -968,7 +1039,7 @@ export default function App() {
                 <div className="border-l-4 border-[#991B1B] pl-3 py-1">
                   <h5 className="font-bold text-xs uppercase text-[#1A1A1A]">Chương 3: Tiền tệ và Quy luật giá trị</h5>
                   <p className="text-xs text-gray-600 mt-1">
-                    Tiền tệ là hàng hóa đặc biệt đóng vai trò là vật ngang giá chung. Tiền có 5 chức năng chính: Thước đo giá trị, Phương tiện lưu thông, Phương tiện cất trữ, Phương tiện thanh toán và Tiền tệ thế giới. 
+                    Tiền tệ là hàng hóa đặc biệt đóng vai trò là vật ngang giá chung. Tiền có 5 chức năng chính: Thước đo giá trị, Phương tiện lưu thông, Phương tiện cất trữ, Phương tiện thanh toán và Tiền tệ thế giới.
                     Quy luật giá trị yêu cầu việc sản xuất và trao đổi hàng hóa phải dựa trên hao phí lao động xã hội cần thiết.
                   </p>
                 </div>
@@ -976,7 +1047,7 @@ export default function App() {
                 <div className="border-l-4 border-[#991B1B] pl-3 py-1">
                   <h5 className="font-bold text-xs uppercase text-[#1A1A1A]">Chương 4: Học thuyết giá trị thặng dư</h5>
                   <p className="text-xs text-gray-600 mt-1">
-                    Sức lao động là hàng hóa đặc biệt khi sử dụng sẽ tạo ra giá trị mới lớn hơn giá trị của bản thân nó. 
+                    Sức lao động là hàng hóa đặc biệt khi sử dụng sẽ tạo ra giá trị mới lớn hơn giá trị của bản thân nó.
                     Phần dôi ra ngoài giá trị sức lao động gọi là <strong>Giá trị thặng dư (m)</strong>. Có hai phương pháp sản xuất thặng dư: tuyệt đối (kéo dài thời gian làm việc) và tương đối (nâng cao năng suất lao động bằng công nghệ).
                   </p>
                 </div>
@@ -984,7 +1055,7 @@ export default function App() {
                 <div className="border-l-4 border-[#991B1B] pl-3 py-1">
                   <h5 className="font-bold text-xs uppercase text-[#1A1A1A]">Chương 5: Cạnh tranh trong nền kinh tế thị trường</h5>
                   <p className="text-xs text-gray-600 mt-1">
-                    Cạnh tranh là sự ganh đua giữa các chủ thể kinh tế nhằm giành giật điều kiện thuận lợi để thu lợi nhuận cao. 
+                    Cạnh tranh là sự ganh đua giữa các chủ thể kinh tế nhằm giành giật điều kiện thuận lợi để thu lợi nhuận cao.
                     Cạnh tranh lành mạnh thúc đẩy cải tiến kỹ thuật, tăng năng suất lao động cá biệt và làm phong phú giá trị sử dụng cho người dùng.
                   </p>
                 </div>
@@ -992,7 +1063,7 @@ export default function App() {
                 <div className="border-l-4 border-[#991B1B] pl-3 py-1">
                   <h5 className="font-bold text-xs uppercase text-[#1A1A1A]">Chương 6: Độc quyền và độc quyền nhà nước</h5>
                   <p className="text-xs text-gray-600 mt-1">
-                    Sự phát triển vượt bậc của tích tụ và tập trung tư bản dẫn đến việc hình thành các liên minh độc quyền lớn thống lĩnh thị trường. 
+                    Sự phát triển vượt bậc của tích tụ và tập trung tư bản dẫn đến việc hình thành các liên minh độc quyền lớn thống lĩnh thị trường.
                     Chúng áp đặt <strong>Giá cả độc quyền</strong> và thu về <strong>Lợi nhuận độc quyền cao</strong>. Giải pháp là định vị thị trường ngách để sinh tồn.
                   </p>
                 </div>
@@ -1000,7 +1071,7 @@ export default function App() {
                 <div className="border-l-4 border-[#991B1B] pl-3 py-1">
                   <h5 className="font-bold text-xs uppercase text-[#1A1A1A]">Chương 7: Kinh tế thị trường định hướng XHCN ở Việt Nam</h5>
                   <p className="text-xs text-gray-600 mt-1">
-                    Nền kinh tế thị trường hiện đại, hội nhập quốc tế, vận hành đầy đủ theo các quy luật thị trường dưới sự quản lý của Nhà nước pháp quyền xã hội chủ nghĩa. 
+                    Nền kinh tế thị trường hiện đại, hội nhập quốc tế, vận hành đầy đủ theo các quy luật thị trường dưới sự quản lý của Nhà nước pháp quyền xã hội chủ nghĩa.
                     Đặc trưng cốt lõi là gắn kết phát triển kinh tế bền vững, bảo vệ môi trường và bảo đảm công bằng xã hội.
                   </p>
                 </div>

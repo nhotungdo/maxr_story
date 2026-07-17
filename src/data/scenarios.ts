@@ -1,4 +1,4 @@
-import { Character, Option } from "./types";
+import { Character, Option } from "../types/types";
 import { CHARACTER_TERMS } from "./data";
 
 type TemplateContext = {

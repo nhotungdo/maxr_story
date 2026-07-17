@@ -7,7 +7,17 @@ const getAudioContext = () => {
 
 let audioCtx: AudioContext | null = null;
 
+let isMuted = false;
+
+export const setMuted = (muted: boolean) => {
+  isMuted = muted;
+};
+
+export const getMuted = () => isMuted;
+
 export const playSound = (type: 'success' | 'error') => {
+  if (isMuted) return;
+  
   try {
     if (!audioCtx) {
       audioCtx = getAudioContext();

@@ -1,4 +1,4 @@
-import { Character, Chapter, Badge, Ending, Option } from "./types";
+import { Character, Chapter, Badge, Ending, Option } from "../types/types";
 import { getChapterScenario } from "./scenarios";
 
 export const CHARACTERS: Character[] = [
