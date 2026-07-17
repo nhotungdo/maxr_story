@@ -50,6 +50,16 @@ export default function App() {
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top whenever game state or chapter changes
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0;
+    }
+    // Also scroll window for mobile layout where body scrolls
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [gameState.gameState, gameState.currentChapter]);
 
   useEffect(() => {
     if (gameState.gameState === "STORY" && !isMuted && audioRef.current) {
@@ -517,7 +527,7 @@ export default function App() {
         )}
 
         {/* CENTER CONTENT */}
-        <div className="flex-1 p-4 md:p-8 flex flex-col justify-between overflow-y-auto">
+        <div ref={mainContentRef} className="flex-1 p-4 md:p-8 flex flex-col justify-between overflow-y-auto">
 
           {/* SCREEN 1: CHARACTER SELECTION */}
           {gameState.gameState === "SELECT_CHARACTER" && (
@@ -769,6 +779,16 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Action buttons (Moved up for better visibility) */}
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={handleProceed}
+                  className="px-6 py-3 bg-[#991B1B] hover:bg-[#801414] text-white text-xs font-black uppercase tracking-widest border-2 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] hover:shadow-[2px_2px_0px_#1A1A1A] rounded-sm flex items-center gap-2 transition-all active:translate-y-0.5 active:translate-x-0.5"
+                >
+                  {gameState.currentChapter === 7 ? "Xem Kết Cục Doanh Nghiệp" : `Tiếp tục đến Chương ${gameState.currentChapter + 1}`} <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
               {/* AI FEEDBACK PANEL */}
               <div className="bg-[#1A1A1A] text-white p-6 shadow-[8px_8px_0px_#991B1B] rounded-sm space-y-4">
                 <div className="flex items-center justify-between border-b border-white/20 pb-3">
@@ -817,15 +837,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* Action buttons */}
-              <div className="flex justify-end pt-2">
-                <button
-                  onClick={handleProceed}
-                  className="px-6 py-3 bg-[#991B1B] hover:bg-[#801414] text-white text-xs font-black uppercase tracking-widest border-2 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] hover:shadow-[2px_2px_0px_#1A1A1A] rounded-sm flex items-center gap-2 transition-all active:translate-y-0.5 active:translate-x-0.5"
-                >
-                  {gameState.currentChapter === 7 ? "Xem Kết Cục Doanh Nghiệp" : `Tiếp tục đến Chương ${gameState.currentChapter + 1}`} <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
             </div>
           )}
 
