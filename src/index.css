@@ -3,16 +3,21 @@
 @import "tailwindcss";
 
 html {
-  font-size: 16px; /* Mobile */
+  font-size: 16px;
+  /* Mobile */
 }
+
 @media (min-width: 768px) {
   html {
-    font-size: 18px; /* Tablet */
+    font-size: 18px;
+    /* Tablet */
   }
 }
+
 @media (min-width: 1024px) {
   html {
-    font-size: 20px; /* Desktop */
+    font-size: 19px;
+    /* Desktop */
   }
 }
 
