@@ -335,13 +335,78 @@ export default function App() {
         </div>
       </header>
 
-      {/* STATS BAR ON MOBILE ONLY */}
+      {/* UNIFIED STATS BAR (ALL SCREENS) */}
       {gameState.character && (
-        <div className="md:hidden flex justify-between bg-[#E8E6E1] border-b-2 border-[#1A1A1A] px-4 py-2 text-xs font-semibold">
-          <span className="flex items-center gap-1">💰 Vốn: <strong className="font-mono">{gameState.stats.money}M</strong></span>
-          <span className="flex items-center gap-1">❤️ Uy tín: <strong className="font-mono">{gameState.stats.reputation}%</strong></span>
-          <span className="flex items-center gap-1">😊 Khách: <strong className="font-mono">{gameState.stats.customers}%</strong></span>
-          <span className="flex items-center gap-1">📚 Tri thức: <strong className="font-mono text-[#991B1B]">{gameState.stats.knowledge}</strong></span>
+        <div className="bg-[#1A1A1A] text-white border-b-2 border-[#1A1A1A] px-2 py-2 flex justify-center gap-4 md:gap-12 shadow-[inset_0_-4px_10px_rgba(0,0,0,0.4)] z-10 relative flex-wrap">
+          <div className="text-center group relative">
+            <p className="text-[10px] md:text-xs uppercase text-red-200 flex items-center justify-center gap-1">
+              <Coins className="w-3 h-3 text-amber-400" /> Vốn
+            </p>
+            <p className="font-bold font-mono text-sm md:text-base relative">
+              {gameState.stats.money} triệu
+              {statChanges?.money ? (
+                <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.money > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                  {statChanges.money > 0 ? '+' : ''}{statChanges.money}
+                </span>
+              ) : null}
+            </p>
+          </div>
+
+          <div className="text-center group relative">
+            <p className="text-[10px] md:text-xs uppercase text-red-200 flex items-center justify-center gap-1">
+              <ShieldCheck className="w-3 h-3 text-emerald-400" /> Uy tín
+            </p>
+            <p className="font-bold font-mono text-sm md:text-base relative">
+              {gameState.stats.reputation}%
+              {statChanges?.reputation ? (
+                <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.reputation > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                  {statChanges.reputation > 0 ? '+' : ''}{statChanges.reputation}
+                </span>
+              ) : null}
+            </p>
+          </div>
+
+          <div className="text-center group relative">
+            <p className="text-[10px] md:text-xs uppercase text-red-200 flex items-center justify-center gap-1">
+              <Users className="w-3 h-3 text-sky-400" /> Khách
+            </p>
+            <p className="font-bold font-mono text-sm md:text-base relative">
+              {gameState.stats.customers}%
+              {statChanges?.customers ? (
+                <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.customers > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                  {statChanges.customers > 0 ? '+' : ''}{statChanges.customers}
+                </span>
+              ) : null}
+            </p>
+          </div>
+
+          <div className="text-center group relative">
+            <p className="text-[10px] md:text-xs uppercase text-red-200 flex items-center justify-center gap-1">
+              <Briefcase className="w-3 h-3 text-purple-400" /> N.viên
+            </p>
+            <p className="font-bold font-mono text-sm md:text-base relative">
+              {gameState.stats.staff}
+              {statChanges?.staff ? (
+                <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.staff > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                  {statChanges.staff > 0 ? '+' : ''}{statChanges.staff}
+                </span>
+              ) : null}
+            </p>
+          </div>
+
+          <div className="text-center group relative">
+            <p className="text-[10px] md:text-xs uppercase text-red-200 flex items-center justify-center gap-1">
+              <BookOpen className="w-3 h-3 text-yellow-300" /> Tri thức
+            </p>
+            <p className="font-bold font-mono text-sm md:text-base text-yellow-300 relative">
+              {gameState.stats.knowledge}
+              {statChanges?.knowledge ? (
+                <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.knowledge > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                  {statChanges.knowledge > 0 ? '+' : ''}{statChanges.knowledge}
+                </span>
+              ) : null}
+            </p>
+          </div>
         </div>
       )}
 

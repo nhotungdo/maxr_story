@@ -42,19 +42,19 @@ Nhân vật: ${character}
 Chương học: Chương ${chapter} - ${concept}
 Tình huống: ${scenario}
 Lựa chọn của người chơi: ${choice}
-Kết quả kinh doanh lập tức: ${consequence}
+Kết quả: ${consequence}
 
-Hãy viết một đoạn giải thích ngắn gọn, sinh động bằng tiếng Việt với vai trò "Giáo sư AI" chuyên ngành Kinh tế chính trị Mác - Lênin.
-Chỉ ra trực quan khái niệm kinh tế chính trị liên quan đến kết quả này (ví dụ: quy luật giá trị, cạnh tranh, độc quyền, giá trị thặng dư, cung cầu...). 
-Viết tối đa 4 câu, thật dễ hiểu, thực tế và mang tính khích lệ học tập!
+Hãy viết 1-2 câu giải thích cực kỳ ngắn gọn, sinh động bằng tiếng Việt vai trò "Giáo sư AI".
+Chỉ ra trực quan khái niệm kinh tế Mác - Lênin cốt lõi ở kết quả này. Phải thật súc tích, phản hồi ngay lập tức!
 `;
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
       contents: prompt,
       config: {
-        systemInstruction: "Bạn là Giáo sư AI giảng dạy môn Kinh tế chính trị Mác - Lênin cực kỳ dí dỏm, thực tế và dễ gần. Bạn giải thích các hiện tượng kinh doanh thực tế qua lăng kính lý thuyết Mác - Lênin một cách ngắn gọn, súc tích (dưới 100 từ), sử dụng các ví dụ sinh động.",
-        temperature: 0.7,
+        systemInstruction: "Bạn là Giáo sư AI môn Kinh tế chính trị. Bạn phải giải thích cực kỳ ngắn gọn (dưới 50 từ), trực diện vào trọng tâm lý thuyết.",
+        temperature: 0.5,
+        maxOutputTokens: 100,
       },
     });
 
