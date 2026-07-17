@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { CHARACTERS, CHAPTERS, BADGES, determineEnding, ENDINGS } from "./data";
 import { Character, GameState, GameStats, Option } from "./types";
+import { playSound } from "./audio";
 
 export default function App() {
   // Application states
@@ -93,6 +94,14 @@ export default function App() {
     // Track the changes visually
     setLastSelectedOption(option);
     setStatChanges(option.statsEffect);
+
+    if (option.statsEffect.money) {
+      if (option.statsEffect.money > 0) {
+        playSound('success');
+      } else {
+        playSound('error');
+      }
+    }
 
     // Apply stats effects
     const newStats = { ...gameState.stats };
@@ -221,7 +230,9 @@ export default function App() {
 
   // Render variables
   const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
-  const currentScenario = gameState.character && currentChapterData ? currentChapterData.getScenario(gameState.character) : null;
+  const currentScenario = React.useMemo(() => {
+    return gameState.character && currentChapterData ? currentChapterData.getScenario(gameState.character) : null;
+  }, [gameState.character, gameState.currentChapter, currentChapterData]);
   const finalEnding = gameState.character ? determineEnding({
     money: gameState.stats.money,
     reputation: gameState.stats.reputation,
@@ -235,11 +246,11 @@ export default function App() {
       <header className="bg-[#991B1B] text-white flex flex-col md:flex-row items-center justify-between px-6 py-4 shadow-md border-b-4 border-[#1A1A1A] relative z-20">
         <div className="flex items-center gap-4 mb-3 md:mb-0 cursor-pointer" onClick={handleRestart}>
           <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center border-2 border-[#1A1A1A] shadow-[2px_2px_0px_#1A1A1A]">
-            <span className="text-[#991B1B] font-black text-2xl font-serif">M</span>
+            <span className="text-[#991B1B] font-black text-2xl ">M</span>
           </div>
           <div>
-            <h1 className="text-2xl font-black uppercase tracking-tighter italic leading-none">Marx Story</h1>
-            <p className="text-[10px] uppercase tracking-[0.2em] font-medium opacity-85 italic">Hành trình Kinh tế Chính trị Mác - Lênin</p>
+            <h1 className="text-2xl font-black uppercase tracking-tighter  leading-none">Marx Story</h1>
+            <p className="text-[12px] uppercase tracking-[0.2em] font-medium opacity-85 ">Hành trình Kinh tế Chính trị Mác - Lênin</p>
           </div>
         </div>
 
@@ -247,8 +258,8 @@ export default function App() {
           <div className="flex flex-wrap gap-4 md:gap-8 items-center justify-center">
             {/* Chapter Progress */}
             <div className="flex flex-col items-center md:items-end">
-              <span className="text-[10px] uppercase font-bold text-red-200">Chương {gameState.currentChapter} / 7</span>
-              <span className="text-xs font-serif italic text-white line-clamp-1 max-w-[180px] md:max-w-[280px]">
+              <span className="text-[12px] uppercase font-bold text-red-200">Chương {gameState.currentChapter} / 7</span>
+              <span className="text-xs   text-white line-clamp-1 max-w-[180px] md:max-w-[280px]">
                 {currentChapterData?.concept}
               </span>
             </div>
@@ -261,44 +272,69 @@ export default function App() {
                 <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
                   <Coins className="w-3 h-3 text-amber-400" /> Vốn
                 </p>
-                <p className="font-bold font-mono text-sm md:text-base">
+                <p className="font-bold font-mono text-sm md:text-base relative">
                   {gameState.stats.money} triệu
+                  {statChanges?.money ? (
+                    <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.money > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                      {statChanges.money > 0 ? '+' : ''}{statChanges.money}
+                    </span>
+                  ) : null}
                 </p>
               </div>
 
-              <div className="text-center">
+              <div className="text-center group relative">
                 <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-emerald-400" /> Uy tín
                 </p>
-                <p className="font-bold font-mono text-sm md:text-base">
+                <p className="font-bold font-mono text-sm md:text-base relative">
                   {gameState.stats.reputation}%
+                  {statChanges?.reputation ? (
+                    <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.reputation > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                      {statChanges.reputation > 0 ? '+' : ''}{statChanges.reputation}
+                    </span>
+                  ) : null}
                 </p>
               </div>
 
-              <div className="text-center">
+              <div className="text-center group relative">
                 <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
                   <Users className="w-3 h-3 text-sky-400" /> Khách
                 </p>
-                <p className="font-bold font-mono text-sm md:text-base">
+                <p className="font-bold font-mono text-sm md:text-base relative">
                   {gameState.stats.customers}%
+                  {statChanges?.customers ? (
+                    <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.customers > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                      {statChanges.customers > 0 ? '+' : ''}{statChanges.customers}
+                    </span>
+                  ) : null}
                 </p>
               </div>
 
-              <div className="text-center">
+              <div className="text-center group relative">
                 <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
                   <Briefcase className="w-3 h-3 text-purple-400" /> N.viên
                 </p>
-                <p className="font-bold font-mono text-sm md:text-base">
+                <p className="font-bold font-mono text-sm md:text-base relative">
                   {gameState.stats.staff}
+                  {statChanges?.staff ? (
+                    <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.staff > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                      {statChanges.staff > 0 ? '+' : ''}{statChanges.staff}
+                    </span>
+                  ) : null}
                 </p>
               </div>
 
-              <div className="text-center">
+              <div className="text-center group relative">
                 <p className="text-[9px] uppercase text-red-200 flex items-center justify-center gap-1">
                   <BookOpen className="w-3 h-3 text-yellow-300" /> Tri thức
                 </p>
-                <p className="font-bold font-mono text-sm md:text-base text-yellow-300">
+                <p className="font-bold font-mono text-sm md:text-base text-yellow-300 relative">
                   {gameState.stats.knowledge}
+                  {statChanges?.knowledge ? (
+                    <span className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 font-black text-sm md:text-base drop-shadow-md ${statChanges.knowledge > 0 ? 'text-emerald-400 animate-float-up' : 'text-rose-500 animate-float-down'}`}>
+                      {statChanges.knowledge > 0 ? '+' : ''}{statChanges.knowledge}
+                    </span>
+                  ) : null}
                 </p>
               </div>
             </div>
@@ -344,16 +380,16 @@ export default function App() {
                     <span className="text-[9px] uppercase font-bold tracking-wider text-[#991B1B] bg-white px-1.5 py-0.5 border border-[#1A1A1A] rounded-sm">
                       Nhân vật
                     </span>
-                    <h2 className="text-xl font-serif font-bold italic text-[#1A1A1A] mt-1">{gameState.character.name}</h2>
+                    <h2 className="text-xl  font-bold  text-[#1A1A1A] mt-1">{gameState.character.name}</h2>
                     <p className="text-xs font-semibold opacity-75">{gameState.character.title}</p>
                   </div>
                 </div>
                 
                 <div className="px-4 pb-4 pt-1 border-t border-[#1A1A1A]/20 bg-[#F5F5F0]/50">
-                  <p className="text-xs text-[#1A1A1A]/80 font-serif italic mb-2 leading-relaxed">
+                  <p className="text-xs text-[#1A1A1A]/80   mb-2 leading-relaxed">
                     "{gameState.character.description}"
                   </p>
-                  <p className="text-[10px] uppercase font-bold text-[#1A1A1A]/60">Ngành nghề: <span className="text-[#1A1A1A] lowercase font-medium">{gameState.character.businessType}</span></p>
+                  <p className="text-[12px] uppercase font-bold text-[#1A1A1A]/60">Ngành nghề: <span className="text-[#1A1A1A] lowercase font-medium">{gameState.character.businessType}</span></p>
                 </div>
               </div>
 
@@ -397,7 +433,7 @@ export default function App() {
 
             {/* Badges unlocked */}
             <div className="mt-5 border-t border-[#1A1A1A]/20 pt-4">
-              <p className="text-[10px] uppercase font-black tracking-widest mb-2.5 text-[#1A1A1A]/60 flex items-center gap-1">
+              <p className="text-[12px] uppercase font-black tracking-widest mb-2.5 text-[#1A1A1A]/60 flex items-center gap-1">
                 <Award className="w-3.5 h-3.5 text-[#991B1B]" /> Huy chương đạt được ({gameState.badges.length})
               </p>
               <div className="flex flex-wrap gap-2">
@@ -415,10 +451,10 @@ export default function App() {
                     >
                       <span>{badge.icon}</span>
                       {/* Tooltip */}
-                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block w-48 bg-[#1A1A1A] text-white text-[10px] rounded p-2 z-30 shadow-lg pointer-events-none">
+                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block w-48 bg-[#1A1A1A] text-white text-[12px] rounded p-2 z-30 shadow-lg pointer-events-none">
                         <p className="font-bold text-[#FFA500]">{badge.name}</p>
                         <p className="text-gray-300 mt-0.5">{badge.description}</p>
-                        <p className="text-gray-400 mt-1 italic">
+                        <p className="text-gray-400 mt-1 ">
                           {isUnlocked ? "✓ Đã mở khóa" : `🔒 Khóa (Yêu cầu Tri thức ≥ ${badge.unlockedAtKnowledge})`}
                         </p>
                       </div>
@@ -443,7 +479,7 @@ export default function App() {
                 <span className="text-xs uppercase font-black tracking-[0.25em] text-[#991B1B] bg-[#991B1B]/10 px-3 py-1 rounded-sm">
                   Dự án học tập tương tác sáng tạo
                 </span>
-                <h2 className="text-2xl md:text-4xl font-serif italic font-black text-[#1A1A1A]">
+                <h2 className="text-2xl md:text-4xl   font-black text-[#1A1A1A]">
                   Khởi nghiệp qua lăng kính Kinh tế Chính trị
                 </h2>
                 <p className="text-sm text-[#1A1A1A]/80 max-w-2xl mx-auto leading-relaxed">
@@ -500,7 +536,7 @@ export default function App() {
                             </div>
                             <div className="min-w-0">
                               <h4 className="font-bold text-xs truncate text-[#1A1A1A]">{char.name}</h4>
-                              <p className="text-[10px] text-gray-500 truncate">{char.title}</p>
+                              <p className="text-[12px] text-gray-500 truncate">{char.title}</p>
                               <div className="flex text-[9px] text-[#991B1B] mt-0.5 font-bold">
                                 {"★".repeat(char.difficulty)}
                                 {"☆".repeat(5 - char.difficulty)}
@@ -526,14 +562,14 @@ export default function App() {
                           {selectedCharPreview.avatar}
                         </div>
                         <div>
-                          <h3 className="font-serif font-black italic text-xl text-[#1A1A1A]">{selectedCharPreview.name}</h3>
+                          <h3 className=" font-black  text-xl text-[#1A1A1A]">{selectedCharPreview.name}</h3>
                           <p className="text-xs font-semibold text-gray-500 leading-tight">{selectedCharPreview.title}</p>
                         </div>
                       </div>
 
                       <div className="space-y-2.5">
                         <div className="bg-[#F5F5F0] p-2.5 border border-[#1A1A1A]/20 rounded-sm">
-                          <p className="text-xs text-gray-700 leading-relaxed font-serif italic">
+                          <p className="text-xs text-gray-700 leading-relaxed  ">
                             "{selectedCharPreview.description}"
                           </p>
                         </div>
@@ -599,14 +635,14 @@ export default function App() {
                   <h3 className="font-black text-xs uppercase tracking-widest text-gray-500">Tình huống giả định</h3>
                 </div>
                 
-                <p className="text-lg md:text-xl font-serif text-[#1A1A1A] leading-relaxed italic first-letter:text-4xl first-letter:font-bold first-letter:text-[#991B1B] first-letter:float-left first-letter:mr-2">
+                <p className="text-lg md:text-xl  text-[#1A1A1A] leading-relaxed  first-letter:text-4xl first-letter:font-bold first-letter:text-[#991B1B] first-letter:float-left first-letter:mr-2">
                   {currentScenario.intro}
                 </p>
 
                 {/* Scenario Illustration Dynamic helper */}
                 <div className="bg-[#FAF9F5] border border-[#1A1A1A]/10 p-3 rounded-sm text-center flex flex-col justify-center items-center space-y-1">
                   <p className="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Mô tả quy luật liên quan</p>
-                  <p className="text-xs font-serif italic text-gray-600">
+                  <p className="text-xs   text-gray-600">
                     "{currentChapterData?.concept}"
                   </p>
                 </div>
@@ -627,7 +663,7 @@ export default function App() {
                         onClick={() => handleMakeDecision(option)}
                         className="w-full text-left p-4 bg-white border-2 border-[#1A1A1A] hover:border-[#991B1B] hover:bg-red-50/20 rounded-sm transition-all flex gap-4 items-center shadow-[4px_4px_0px_#1A1A1A] hover:shadow-[6px_6px_0px_#991B1B] active:translate-y-0.5 active:translate-x-0.5 group"
                       >
-                        <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] group-hover:border-[#991B1B] group-hover:bg-[#991B1B] group-hover:text-white flex items-center justify-center font-bold font-serif text-sm transition-colors bg-[#FAF9F5]">
+                        <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] group-hover:border-[#991B1B] group-hover:bg-[#991B1B] group-hover:text-white flex items-center justify-center font-bold  text-sm transition-colors bg-[#FAF9F5]">
                           {optionLetter}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -664,7 +700,7 @@ export default function App() {
                       return (
                         <span 
                           key={key} 
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          className={`text-[12px] font-bold px-2 py-0.5 rounded-full border ${
                             isPositive 
                               ? "bg-emerald-50 border-emerald-300 text-emerald-700" 
                               : "bg-rose-50 border-rose-300 text-rose-700"
@@ -679,7 +715,7 @@ export default function App() {
 
                 <div className="space-y-3">
                   <p className="text-xs uppercase font-black text-gray-400">Điều gì vừa xảy ra:</p>
-                  <p className="text-lg md:text-xl font-serif italic text-gray-800 leading-relaxed font-bold">
+                  <p className="text-lg md:text-xl   text-gray-800 leading-relaxed font-bold">
                     "{lastSelectedOption.consequence}"
                   </p>
                 </div>
@@ -694,11 +730,11 @@ export default function App() {
                     </div>
                     <div>
                       <h4 className="text-[11px] font-black uppercase tracking-widest text-red-400">Giảng dạy từ Giáo sư AI</h4>
-                      <p className="text-[10px] text-gray-400 font-medium">Kinh tế chính trị Mác - Lênin trực quan</p>
+                      <p className="text-[12px] text-gray-400 font-medium">Kinh tế chính trị Mác - Lênin trực quan</p>
                     </div>
                   </div>
                   {gameState.aiLoading && (
-                    <span className="text-[10px] bg-red-900/40 text-red-300 border border-red-700/50 px-2 py-0.5 rounded animate-pulse">
+                    <span className="text-[12px] bg-red-900/40 text-red-300 border border-red-700/50 px-2 py-0.5 rounded animate-pulse">
                       Đang phân tích dữ liệu...
                     </span>
                   )}
@@ -710,21 +746,21 @@ export default function App() {
                       <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
                       <Sparkles className="w-4 h-4 text-yellow-400 absolute top-3 left-3 animate-ping" />
                     </div>
-                    <p className="text-xs font-serif italic text-gray-400">
+                    <p className="text-xs   text-gray-400">
                       "Đang chuẩn bị lý thuyết và viết báo cáo phân tích cho bạn..."
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <p className="text-sm md:text-base font-serif italic text-gray-200 leading-relaxed first-letter:text-3xl first-letter:font-black first-letter:text-red-400 first-letter:float-left first-letter:mr-2">
+                    <p className="text-sm md:text-base   text-gray-200 leading-relaxed first-letter:text-3xl first-letter:font-black first-letter:text-red-400 first-letter:float-left first-letter:mr-2">
                       {gameState.currentAiFeedback}
                     </p>
 
                     <div className="bg-white/5 border border-white/10 p-3 rounded-sm flex items-start gap-2.5">
                       <Info className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-400">Khái niệm cốt lõi:</span>
-                        <p className="text-xs text-gray-300 font-serif italic">
+                        <span className="text-[12px] uppercase font-bold text-gray-400">Khái niệm cốt lõi:</span>
+                        <p className="text-xs text-gray-300  ">
                           {lastSelectedOption.marxTheory}
                         </p>
                       </div>
@@ -759,11 +795,11 @@ export default function App() {
                   KẾT THÚC CÂU CHUYỆN
                 </span>
 
-                <h2 className="text-2xl md:text-4xl font-serif italic font-black text-[#1A1A1A] mb-4 leading-tight">
+                <h2 className="text-2xl md:text-4xl   font-black text-[#1A1A1A] mb-4 leading-tight">
                   {finalEnding.title}
                 </h2>
 
-                <p className="text-sm md:text-base text-gray-800 max-w-2xl mx-auto font-serif leading-relaxed italic bg-white/60 p-5 rounded-sm border border-[#1A1A1A]/10 shadow-inner">
+                <p className="text-sm md:text-base text-gray-800 max-w-2xl mx-auto  leading-relaxed  bg-white/60 p-5 rounded-sm border border-[#1A1A1A]/10 shadow-inner">
                   {finalEnding.description}
                 </p>
               </div>
@@ -779,31 +815,31 @@ export default function App() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[10px] text-gray-500 block uppercase font-bold">💰 Vốn doanh nghiệp</span>
+                      <span className="text-[12px] text-gray-500 block uppercase font-bold">💰 Vốn doanh nghiệp</span>
                       <strong className="text-lg font-mono text-[#1A1A1A]">{gameState.stats.money} triệu VNĐ</strong>
                     </div>
 
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[10px] text-gray-500 block uppercase font-bold">❤️ Uy tín thương hiệu</span>
+                      <span className="text-[12px] text-gray-500 block uppercase font-bold">❤️ Uy tín thương hiệu</span>
                       <strong className="text-lg font-mono text-[#1A1A1A]">{gameState.stats.reputation}%</strong>
                     </div>
 
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[10px] text-gray-500 block uppercase font-bold">😊 Lượng khách hàng</span>
+                      <span className="text-[12px] text-gray-500 block uppercase font-bold">😊 Lượng khách hàng</span>
                       <strong className="text-lg font-mono text-[#1A1A1A]">{gameState.stats.customers}%</strong>
                     </div>
 
                     <div className="border border-[#1A1A1A]/15 p-3 rounded-sm bg-[#FAF9F5]">
-                      <span className="text-[10px] text-gray-500 block uppercase font-bold">📚 Tri thức Mác - Lênin</span>
+                      <span className="text-[12px] text-gray-500 block uppercase font-bold">📚 Tri thức Mác - Lênin</span>
                       <strong className="text-lg font-mono text-[#991B1B]">{gameState.stats.knowledge} / 100</strong>
                     </div>
                   </div>
 
                   <div className="bg-[#FAF9F5] border border-dashed border-[#1A1A1A]/20 p-3 rounded-sm text-center">
-                    <p className="text-[10px] text-gray-500 uppercase font-black tracking-wider">Huy chương thu thập</p>
+                    <p className="text-[12px] text-gray-500 uppercase font-black tracking-wider">Huy chương thu thập</p>
                     <div className="flex justify-center gap-2 mt-2">
                       {gameState.badges.length === 0 ? (
-                        <p className="text-xs text-gray-400 italic font-serif">Bạn chưa thu được huy chương nào lần này.</p>
+                        <p className="text-xs text-gray-400  ">Bạn chưa thu được huy chương nào lần này.</p>
                       ) : (
                         BADGES.filter(b => gameState.badges.includes(b.id)).map(badge => (
                           <span 
@@ -830,7 +866,7 @@ export default function App() {
                       {gameState.history.map((hist, idx) => (
                         <div key={idx} className="text-xs border-b border-gray-200 pb-2">
                           <span className="font-bold text-[#1A1A1A] block">Chương {hist.chapter}: {hist.scenario.substring(0, 50)}...</span>
-                          <p className="text-gray-500 font-serif italic mt-0.5">Bạn đã chọn: "{hist.chosenOption.substring(0, 60)}..."</p>
+                          <p className="text-gray-500   mt-0.5">Bạn đã chọn: "{hist.chosenOption.substring(0, 60)}..."</p>
                         </div>
                       ))}
                     </div>
@@ -853,20 +889,20 @@ export default function App() {
             <div className="flex flex-wrap justify-center gap-4">
               <button 
                 onClick={() => handleRestart()}
-                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-[10px] font-bold uppercase tracking-wider rounded-sm transition-all"
+                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-[12px] font-bold uppercase tracking-wider rounded-sm transition-all"
                 id="footer-character-select"
               >
                 Chọn Nhân Vật
               </button>
               <button 
                 onClick={() => setShowGlossaryModal(true)}
-                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-[10px] font-bold uppercase tracking-wider rounded-sm transition-all"
+                className="px-3 py-1.5 border border-[#1A1A1A] hover:bg-[#E8E6E1] text-[12px] font-bold uppercase tracking-wider rounded-sm transition-all"
                 id="footer-syllabus"
               >
                 Giáo Trình Học Tập
               </button>
             </div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-55 italic text-[#1A1A1A]">
+            <p className="text-[12px] font-bold uppercase tracking-[0.2em] opacity-55  text-[#1A1A1A]">
               Bản quyền &copy; 2026 Marx Story Team • Chuyên đề Giáo dục đổi mới
             </p>
           </footer>
@@ -889,7 +925,7 @@ export default function App() {
             <div className="bg-[#991B1B] text-white p-4 flex justify-between items-center border-b-2 border-[#1A1A1A]">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
-                <h3 className="font-serif font-black italic text-lg uppercase">Giáo trình Tóm tắt: Kinh tế Chính trị Mác - Lênin</h3>
+                <h3 className=" font-black  text-lg uppercase">Giáo trình Tóm tắt: Kinh tế Chính trị Mác - Lênin</h3>
               </div>
               <button 
                 onClick={() => setShowGlossaryModal(false)}
@@ -903,8 +939,8 @@ export default function App() {
             <div className="p-6 overflow-y-auto space-y-6">
               
               <div className="bg-white p-4 border border-[#1A1A1A]/15 rounded-sm">
-                <h4 className="font-serif font-black italic text-red-700 text-sm mb-2">Lời giới thiệu</h4>
-                <p className="text-xs text-gray-700 leading-relaxed font-serif italic">
+                <h4 className=" font-black  text-red-700 text-sm mb-2">Lời giới thiệu</h4>
+                <p className="text-xs text-gray-700 leading-relaxed  ">
                   Kinh tế chính trị Mác - Lênin không phải là những trang lý thuyết hàn lâm nằm ngủ yên trong giáo trình. 
                   Đó là các quy luật khách quan chi phối trực tiếp mọi hoạt động sản xuất, trao đổi, và lưu thông hàng hóa trên thị trường mà hàng ngày chúng ta đang tham gia. 
                   Hãy dùng cẩm nang này làm kim chỉ nam để giải quyết các chương trong game!

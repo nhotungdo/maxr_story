@@ -1,4 +1,5 @@
 import { Character, Chapter, Badge, Ending, Option } from "./types";
+import { getChapterScenario } from "./scenarios";
 
 export const CHARACTERS: Character[] = [
   {
@@ -221,11 +222,171 @@ export const CHARACTERS: Character[] = [
       staff: 8,
       knowledge: 30
     }
+  },
+  {
+    id: "tuan_realestate",
+    name: "Tuấn",
+    title: "Môi giới Bất động sản",
+    avatar: "🏢",
+    difficulty: 3,
+    description: "Nhân viên môi giới cá nhân chuyên nhà đất. Thu nhập không ổn định phụ thuộc hoa hồng nhưng có thể phất lên sau 1 đêm.",
+    businessType: "Dịch vụ Bất động sản",
+    strengths: "Không cần ôm hàng, biên lợi nhuận (hoa hồng) cực lớn.",
+    challenges: [
+      "Thị trường đóng băng",
+      "Bị cò đất lừa gạt",
+      "Khách hàng thay đổi ý định phút chót"
+    ],
+    baseStats: { money: 10, reputation: 50, customers: 15, staff: 0, knowledge: 20 }
+  },
+  {
+    id: "nga_spa",
+    name: "Nga",
+    title: "Chủ tiệm Spa & Làm đẹp",
+    avatar: "💆",
+    difficulty: 2,
+    description: "Kinh doanh dịch vụ chăm sóc da và làm đẹp. Nhu cầu ngày càng cao nhưng đòi hỏi chất lượng tay nghề và máy móc hiện đại.",
+    businessType: "Dịch vụ Chăm sóc sức khỏe & Sắc đẹp",
+    strengths: "Biên độ lợi nhuận trên dịch vụ rất cao, khách hàng trung thành.",
+    challenges: [
+      "Chi phí mỹ phẩm và máy móc lớn",
+      "Khó quản lý tay nghề nhân viên",
+      "Nguy cơ rủi ro y tế"
+    ],
+    baseStats: { money: 25, reputation: 60, customers: 30, staff: 3, knowledge: 15 }
+  },
+  {
+    id: "hai_tutor",
+    name: "Hải",
+    title: "Giáo viên Dạy kèm",
+    avatar: "📚",
+    difficulty: 1,
+    description: "Dạy kèm các môn học cho học sinh phổ thông. Chỉ dùng kiến thức cá nhân nhưng sức lực có hạn.",
+    businessType: "Dịch vụ Giáo dục",
+    strengths: "Chi phí vốn bằng 0, chỉ cần kỹ năng sư phạm.",
+    challenges: [
+      "Giới hạn thời gian 24h/ngày",
+      "Sự xuất hiện của các trung tâm lớn",
+      "Áp lực thành tích từ phụ huynh"
+    ],
+    baseStats: { money: 5, reputation: 70, customers: 20, staff: 0, knowledge: 40 }
+  },
+  {
+    id: "vy_baker",
+    name: "Vy",
+    title: "Chủ tiệm bánh ngọt",
+    avatar: "🍰",
+    difficulty: 2,
+    description: "Mở tiệm bánh kem và bánh ngọt tự làm. Sản phẩm đẹp mắt, ngon miệng nhưng thời gian bảo quản cực ngắn.",
+    businessType: "Ẩm thực & Dịch vụ",
+    strengths: "Sự khác biệt về hương vị và thiết kế độc quyền.",
+    challenges: [
+      "Nguyên liệu dư thừa dễ hỏng",
+      "Làm việc vào các ngày lễ Tết vất vả",
+      "Cạnh tranh với chuỗi bánh công nghiệp"
+    ],
+    baseStats: { money: 15, reputation: 65, customers: 40, staff: 2, knowledge: 15 }
+  },
+  {
+    id: "kien_gym",
+    name: "Kiên",
+    title: "Huấn luyện viên Gym",
+    avatar: "🏋️",
+    difficulty: 3,
+    description: "Vừa làm HLV cá nhân vừa mở một phòng tập quy mô nhỏ. Đòi hỏi đam mê thể hình và vốn đầu tư thiết bị cao.",
+    businessType: "Dịch vụ Thể thao",
+    strengths: "Mô hình thu tiền gói dài hạn giúp xoay vòng vốn tốt.",
+    challenges: [
+      "Máy móc nhanh hao mòn",
+      "Chi phí mặt bằng rất lớn",
+      "Cạnh tranh với hệ thống gym 5 sao"
+    ],
+    baseStats: { money: 40, reputation: 50, customers: 35, staff: 2, knowledge: 20 }
+  },
+  {
+    id: "chau_pet",
+    name: "Châu",
+    title: "Chủ tiệm Thú cưng",
+    avatar: "🐕",
+    difficulty: 3,
+    description: "Kinh doanh vật nuôi, phụ kiện và dịch vụ grooming. Nhu cầu rất lớn từ giới trẻ yêu động vật.",
+    businessType: "Bán lẻ & Dịch vụ Thú cưng",
+    strengths: "Tình cảm của khách hàng với thú cưng tạo ra sức mua lớn.",
+    challenges: [
+      "Rủi ro dịch bệnh trên vật nuôi",
+      "Đòi hỏi không gian vệ sinh sạch sẽ",
+      "Xu hướng phụ kiện thay đổi nhanh"
+    ],
+    baseStats: { money: 30, reputation: 55, customers: 25, staff: 2, knowledge: 20 }
+  },
+  {
+    id: "phong_garage",
+    name: "Phong",
+    title: "Chủ Gara Ô tô",
+    avatar: "🔧",
+    difficulty: 4,
+    description: "Sửa chữa, bảo dưỡng và độ xe ô tô. Yêu cầu kỹ thuật cao và mặt bằng lớn.",
+    businessType: "Dịch vụ Sửa chữa & Kỹ thuật",
+    strengths: "Khách hàng sẵn sàng chi trả cao cho dịch vụ uy tín.",
+    challenges: [
+      "Khó tìm kiếm thợ máy giỏi",
+      "Rủi ro khi đền bù phụ tùng đắt tiền",
+      "Vốn ôm phụ tùng rất lớn"
+    ],
+    baseStats: { money: 50, reputation: 60, customers: 15, staff: 4, knowledge: 25 }
+  },
+  {
+    id: "my_florist",
+    name: "My",
+    title: "Chủ tiệm Hoa tươi",
+    avatar: "💐",
+    difficulty: 2,
+    description: "Nhập và cắm hoa nghệ thuật cho các dịp lễ, sự kiện. Sản phẩm mang tính nghệ thuật cao.",
+    businessType: "Bán lẻ & Nghệ thuật",
+    strengths: "Biên độ lợi nhuận cực lớn vào các ngày lễ (8/3, 20/10).",
+    challenges: [
+      "Hoa nhanh tàn, tỷ lệ hủy hàng cao",
+      "Phụ thuộc lớn vào tính thời vụ",
+      "Mức độ cạnh tranh cực kỳ gay gắt"
+    ],
+    baseStats: { money: 12, reputation: 65, customers: 30, staff: 1, knowledge: 15 }
+  },
+  {
+    id: "dat_gamer",
+    name: "Đạt",
+    title: "Streamer / Tuyển thủ E-sport",
+    avatar: "🎮",
+    difficulty: 4,
+    description: "Kinh doanh sự chú ý qua mạng Internet. Stream game và nhận donate, tài trợ.",
+    businessType: "Giải trí kỹ thuật số",
+    strengths: "Sức lan tỏa lớn, tiềm năng thu nhập vô hạn từ internet.",
+    challenges: [
+      "Quy luật đào thải khắc nghiệt",
+      "Phụ thuộc vào thuật toán nền tảng",
+      "Áp lực tâm lý từ cộng đồng mạng"
+    ],
+    baseStats: { money: 10, reputation: 80, customers: 100, staff: 0, knowledge: 20 }
+  },
+  {
+    id: "hoa_travel",
+    name: "Hòa",
+    title: "Đại lý Du lịch cá nhân",
+    avatar: "✈️",
+    difficulty: 3,
+    description: "Thiết kế tour, bán vé máy bay và phòng khách sạn. Đòi hỏi kỹ năng chốt sale và mạng lưới đối tác tốt.",
+    businessType: "Dịch vụ Du lịch",
+    strengths: "Không cần bỏ vốn ôm phòng, chỉ cần làm trung gian.",
+    challenges: [
+      "Sự cố khách quan (dịch bệnh, thời tiết)",
+      "Cạnh tranh với các nền tảng tự đặt phòng (OTA)",
+      "Giải quyết khiếu nại liên tục"
+    ],
+    baseStats: { money: 15, reputation: 60, customers: 20, staff: 1, knowledge: 25 }
   }
 ];
 
 // Helper details for building dynamic, highly tailored stories based on character attributes
-const CHARACTER_TERMS: Record<string, {
+export const CHARACTER_TERMS: Record<string, {
   productName: string;
   productPlural: string;
   workforce: string;
@@ -238,80 +399,160 @@ const CHARACTER_TERMS: Record<string, {
     productPlural: "café ngon",
     workforce: "nhân viên pha chế và phục vụ",
     competitor: "Chuỗi café Star Coffee khổng lồ",
-    monopolyProduct: "café công nghiệp trợ giá cực rẻ",
+    monopolyProduct: "café công nghiệp đóng chai giá siêu rẻ",
     investmentOption: "mua máy pha espresso xịn của Ý"
   },
   lan_bun: {
     productName: "bát bún sườn gia truyền",
     productPlural: "bún sườn tươi",
     workforce: "phụ bếp và nhân viên bưng bê",
-    competitor: "Chuỗi nhà hàng Phở Đệ Nhất độc quyền thương hiệu",
-    monopolyProduct: "bún ăn liền sấy lạnh đóng gói phủ sóng rộng",
-    investmentOption: "mua nồi hầm xương điện tiết kiệm điện năng"
+    competitor: "Chuỗi nhà hàng Phở Đệ Nhất độc quyền",
+    monopolyProduct: "bún ăn liền sấy lạnh phủ sóng rộng",
+    investmentOption: "mở rộng không gian bếp và nâng cấp bàn ghế"
   },
   huy_fashion: {
-    productName: "bộ quần áo thời trang tự thiết kế",
-    productPlural: "quần áo thời trang",
-    workforce: "nhân viên bán hàng và tư vấn viên",
-    competitor: "Thương hiệu thời trang nhanh Zara-Vina độc quyền",
-    monopolyProduct: "quần áo may sẵn công nghiệp giá sỉ siêu rẻ",
-    investmentOption: "nhập dàn máy may chuyên dụng và vải chất lượng cao"
+    productName: "mẫu quần áo tự thiết kế",
+    productPlural: "thời trang xu hướng",
+    workforce: "nhân viên bán hàng và tư vấn",
+    competitor: "Thương hiệu thời trang nhanh FastFashion",
+    monopolyProduct: "quần áo công nghiệp nhập lậu giá siêu rẻ",
+    investmentOption: "nhập bộ sưu tập vải cao cấp từ Hàn Quốc"
   },
   an_mobile: {
-    productName: "chiếc điện thoại thông minh bảo hành uy tín",
-    productPlural: "điện thoại di động",
-    workforce: "kỹ thuật viên sửa chữa phần cứng",
-    competitor: "Đại siêu thị Thế Giới Di Động độc quyền thị phần",
-    monopolyProduct: "thiết bị điện tử giá gốc không bảo hành phân phối ồ ạt",
-    investmentOption: "đầu tư bộ dụng cụ ép kính, sửa chip hiện đại"
+    productName: "chiếc điện thoại chính hãng",
+    productPlural: "điện thoại và phụ kiện",
+    workforce: "thợ sửa chữa và nhân viên tư vấn",
+    competitor: "Hệ thống siêu thị điện máy BigTech",
+    monopolyProduct: "điện thoại xách tay dựng lại giá rẻ mạt",
+    investmentOption: "nâng cấp trung tâm bảo hành kỹ thuật cao"
   },
   phuc_driver: {
-    productName: "cuốc xe di chuyển an toàn",
-    productPlural: "chuyến xe chở khách",
-    workforce: "bản thân bạn (cường độ lao động cao)",
-    competitor: "Tập đoàn gọi xe đa quốc gia GrabGo độc quyền công nghệ",
-    monopolyProduct: "dịch vụ xe tự hành và trợ giá cuốc xe ảo",
-    investmentOption: "bảo dưỡng toàn bộ động cơ và lắp camera hành trình"
+    productName: "cuốc xe dịch vụ an toàn",
+    productPlural: "chuyến đi chất lượng",
+    workforce: "tài xế (chính bạn)",
+    competitor: "Hệ thống hãng xe taxi truyền thống khổng lồ",
+    monopolyProduct: "ứng dụng đa quốc gia bao tiêu toàn bộ cuốc",
+    investmentOption: "bảo dưỡng toàn bộ nội thất và nâng cấp xe"
   },
   mai_farmer: {
-    productName: "bó rau cải hữu cơ tươi ngon",
-    productPlural: "rau quả sạch",
-    workforce: "nh công thu hoạch và đóng gói rau quả",
-    competitor: "Tập đoàn Nông nghiệp Sạch GreenMart độc quyền kênh thu mua",
-    monopolyProduct: "nông sản hóa chất phun thuốc kích thích năng suất siêu lớn",
-    investmentOption: "lắp đặt hệ thống tưới nhỏ giọt tự động công nghệ Israel"
+    productName: "bó rau củ hữu cơ tươi",
+    productPlural: "nông sản sạch",
+    workforce: "công nhân làm vườn thời vụ",
+    competitor: "Siêu thị nông sản công nghiệp FarmTech",
+    monopolyProduct: "rau trồng công nghiệp phun thuốc kích phốt giá bèo",
+    investmentOption: "lắp đặt hệ thống tưới tiêu tự động nhà kính"
   },
   khanh_freelancer: {
-    productName: "sản phẩm website tối ưu mượt mà",
-    productPlural: "sản phẩm phần mềm",
-    workforce: "cộng tác viên thiết kế giao diện bên ngoài",
-    competitor: "Tổng công ty Outsourcing FPT-Style thống lĩnh hợp đồng lớn",
-    monopolyProduct: "nền tảng tạo web AI tự động giá rẻ không cần code",
-    investmentOption: "nâng cấp Macbook cấu hình khủng và mua bản quyền tool"
+    productName: "dự án phần mềm hoàn thiện",
+    productPlural: "sản phẩm kỹ thuật số",
+    workforce: "cộng tác viên thiết kế và test",
+    competitor: "Công ty gia công phần mềm Outsourcing Mega",
+    monopolyProduct: "phần mềm quản lý có sẵn bán đại trà giá rẻ",
+    investmentOption: "nâng cấp dàn máy tính và mua khóa học AI"
   },
   binh_factory: {
-    productName: "đôi giày da chuẩn phom bền bỉ",
-    productPlural: "giày dép thời trang",
-    workforce: "công nhân vận hành dây chuyền sản xuất",
-    competitor: "Tổng công ty giày da xuất khẩu KingShoes độc quyền phân phối",
-    monopolyProduct: "giày dép nhựa ép công nghiệp nhập lậu siêu rẻ",
-    investmentOption: "mua máy dập đế giày thủy lực thế hệ mới"
+    productName: "đôi giày da chất lượng cao",
+    productPlural: "giày dép gia công",
+    workforce: "công nhân xưởng máy",
+    competitor: "Nhà máy gia công nước ngoài khổng lồ",
+    monopolyProduct: "giày dép nhựa đúc sẵn siêu rẻ",
+    investmentOption: "nhập khẩu dây chuyền cắt dập tự động"
   },
   dung_logistics: {
-    productName: "dịch vụ giao hàng nhanh không móp méo",
-    productPlural: "chuyến hàng vận tải",
-    workforce: "tài xế lái xe tải và nhân viên bốc xếp",
-    competitor: "Tập đoàn chuyển phát nhanh J&T-Speed độc quyền luồng vận chuyển",
-    monopolyProduct: "đội ngũ vận tải tự động hóa áp dụng giá cước lỗ hủy diệt",
-    investmentOption: "mua xe tải tải trọng lớn tiết kiệm nhiên liệu"
+    productName: "chuyến hàng vận tải an toàn",
+    productPlural: "dịch vụ giao nhận",
+    workforce: "tài xế xe tải và nhân viên bốc xếp",
+    competitor: "Tập đoàn giao hàng Global Express",
+    monopolyProduct: "dịch vụ ship siêu tốc độc quyền trên sàn TMĐT",
+    investmentOption: "đầu tư thêm đội xe bán tải chạy trong thành phố"
   },
   linh_startup: {
-    productName: "ứng dụng kết nối dịch vụ mượt mà",
-    productPlural: "sản phẩm công nghệ",
-    workforce: "lập trình viên chuyên sâu Backend và App",
-    competitor: "Siêu ứng dụng đa dịch vụ SuperApp độc quyền nền tảng",
-    monopolyProduct: "nền tảng tích hợp cài sẵn trên hệ điều hành điện thoại",
-    investmentOption: "mua máy chủ đám mây băng thông rộng chịu tải lớn"
+    productName: "gói dịch vụ trên ứng dụng thông minh",
+    productPlural: "tài khoản Premium",
+    workforce: "lập trình viên, marketing và vận hành",
+    competitor: "Siêu ứng dụng Mega App quốc tế",
+    monopolyProduct: "hệ sinh thái độc quyền khóa chặt người dùng",
+    investmentOption: "rót tiền chạy chiến dịch marketing phủ sóng toàn quốc"
+  },
+  tuan_realestate: {
+    productName: "căn hộ dự án cao cấp",
+    productPlural: "sản phẩm bất động sản",
+    workforce: "đội ngũ cộng tác viên môi giới",
+    competitor: "Tập đoàn môi giới nhà đất LandMega",
+    monopolyProduct: "căn hộ giá rẻ xây dựng sai phép",
+    investmentOption: "chi tiền chạy quảng cáo Facebook phủ sóng"
+  },
+  nga_spa: {
+    productName: "liệu trình làm đẹp da",
+    productPlural: "dịch vụ spa",
+    workforce: "kỹ thuật viên chăm sóc da",
+    competitor: "Chuỗi trung tâm thẩm mỹ viện quốc tế VIP Spa",
+    monopolyProduct: "mỹ phẩm trộn giá rẻ bán phá giá",
+    investmentOption: "nhập khẩu máy laser triệt lông công nghệ mới"
+  },
+  hai_tutor: {
+    productName: "khoá học luyện thi chất lượng",
+    productPlural: "giờ dạy kèm",
+    workforce: "trợ giảng chấm bài",
+    competitor: "Hệ thống trung tâm luyện thi lớn EduCenter",
+    monopolyProduct: "khoá học video quay sẵn giá siêu rẻ",
+    investmentOption: "thuê phòng học rộng hơn và mua máy chiếu"
+  },
+  vy_baker: {
+    productName: "chiếc bánh kem thiết kế",
+    productPlural: "bánh ngọt thủ công",
+    workforce: "phụ bếp nhào bột và đóng gói",
+    competitor: "Chuỗi bánh mì công nghiệp BreadBoss",
+    monopolyProduct: "bánh kẹo đóng gói sản xuất hàng loạt",
+    investmentOption: "mua lò nướng công nghiệp đa năng nhiệt độ chuẩn"
+  },
+  kien_gym: {
+    productName: "gói tập cá nhân 1-1",
+    productPlural: "gói thành viên phòng gym",
+    workforce: "huấn luyện viên (PT) thời vụ",
+    competitor: "Hệ thống phòng tập 5 sao MegaFit",
+    monopolyProduct: "video dạy tập miễn phí trên mạng thiếu bài bản",
+    investmentOption: "nâng cấp dàn máy tạ khối chuyên dụng nhập khẩu"
+  },
+  chau_pet: {
+    productName: "gói dịch vụ tắm tỉa thú cưng",
+    productPlural: "phụ kiện và đồ ăn cho chó mèo",
+    workforce: "nhân viên grooming tắm tỉa",
+    competitor: "Siêu thị thú cưng PetWorld khổng lồ",
+    monopolyProduct: "hạt thức ăn thú cưng kém chất lượng giá rẻ bèo",
+    investmentOption: "nhập lồng ấp, máy sấy thú cưng tự động"
+  },
+  phong_garage: {
+    productName: "dịch vụ phủ ceramic bảo vệ sơn",
+    productPlural: "dịch vụ sửa chữa bảo dưỡng",
+    workforce: "thợ phụ máy gầm",
+    competitor: "Trung tâm bảo hành ô tô chính hãng",
+    monopolyProduct: "phụ tùng giả nhái giá rẻ trôi nổi",
+    investmentOption: "mua cầu nâng ô tô 2 trụ loại lớn"
+  },
+  my_florist: {
+    productName: "lẵng hoa nghệ thuật cao cấp",
+    productPlural: "hoa tươi nhập khẩu",
+    workforce: "thợ cắm hoa và shipper",
+    competitor: "Chuỗi điện hoa toàn quốc FlowerExpress",
+    monopolyProduct: "hoa sáp, hoa lụa công nghiệp giá rẻ mạt",
+    investmentOption: "lắp đặt phòng lạnh bảo quản hoa tươi công suất lớn"
+  },
+  dat_gamer: {
+    productName: "video highlight kỹ năng cao",
+    productPlural: "buổi livestream triệu view",
+    workforce: "người quản lý kênh và editor",
+    competitor: "Công ty đào tạo idol Streamer Network",
+    monopolyProduct: "nội dung rác giật tít câu view tràn lan",
+    investmentOption: "nâng cấp PC cấu hình khủng và mic thu âm xịn"
+  },
+  hoa_travel: {
+    productName: "tour du lịch trải nghiệm độc bản",
+    productPlural: "gói combo du lịch",
+    workforce: "nhân viên tư vấn sale tour",
+    competitor: "Tập đoàn du lịch lữ hành Global Tour",
+    monopolyProduct: "app đặt phòng nước ngoài chiết khấu phá giá",
+    investmentOption: "thiết kế lại website đặt tour chuẩn SEO và tự động hóa"
   }
 };
 
@@ -322,204 +563,49 @@ export const CHAPTERS: Chapter[] = [
     title: "Chương 1: Đối tượng và phương pháp nghiên cứu",
     concept: "Quy luật vận động khách quan của thị trường",
     description: "Bạn vừa bước vào kinh doanh. Mọi thứ thật bỡ ngỡ. Tại sao có ngày đông khách nhưng có ngày lại vắng ngắt? Phải chăng do may rủi hay có quy luật kinh tế ẩn giấu đằng sau?",
-    getScenario: (char) => {
-      const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
-      return {
-        intro: `Bạn bắt đầu mở lối kinh doanh với ${char.businessType}. Ngày đầu tiên khai trương, bạn đón nhận doanh thu khá tốt. Tuy nhiên, sang tuần tiếp theo, tình hình trồi sụt thất thường. Có những ngày bạn làm không hết việc, nhưng lại có ngày ngồi không cả buổi. Bạn tự hỏi: "Tại sao nhu cầu của thị trường đối với ${terms.productPlural} lại biến động khó lường đến thế?"`,
-        question: "Dưới góc độ Kinh tế chính trị Mác - Lênin, bạn sẽ chọn phương pháp nào để nghiên cứu và tìm ra câu trả lời?",
-        options: [
-          {
-            id: "1_A",
-            text: "Coi đây là sự may rủi tự nhiên của thị trường. Cứ tiếp tục bán bình thường, hôm nào đông thì mừng, hôm nào vắng thì nghỉ ngơi tiết kiệm sức lực.",
-            statsEffect: { money: -1, reputation: -5, knowledge: 5, customers: -5 },
-            consequence: "Bạn phó mặc doanh nghiệp cho số phận. Sự thụ động khiến khách hàng cảm thấy dịch vụ không ổn định, lượng khách sụt giảm dần và bạn vẫn mơ hồ về thị trường.",
-            marxTheory: "Học thuyết Mác - Lênin chỉ ra rằng các hiện tượng kinh tế trên thị trường luôn vận động có quy luật khách quan, không phải là sự ngẫu nhiên may rủi vô cớ."
-          },
-          {
-            id: "1_B",
-            text: "Sử dụng phương pháp trừu tượng hóa khoa học: Ghi chép dữ liệu, phân tích các biến số cốt lõi (thời tiết, ngày trong tuần, thu nhập khách hàng) để tìm ra quy luật biến động.",
-            statsEffect: { money: -2, reputation: 10, knowledge: 15, customers: 15 },
-            consequence: "Tuy tốn chút chi phí ghi chép quản lý, bạn nhanh chóng phát hiện ra quy luật: khách hàng của bạn tập trung mua sắm mạnh vào các ngày cuối tuần hoặc sau giờ tan tầm. Bạn chủ động chuẩn bị nguyên liệu và tối ưu giờ mở cửa.",
-            marxTheory: "Phương pháp trừu tượng hóa khoa học là phương pháp chủ đạo của Kinh tế chính trị Mác-Lênin, giúp gạt bỏ các yếu tố ngẫu nhiên bên ngoài để tìm ra bản chất quy luật sâu xa bên trong."
-          }
-        ]
-      };
-    }
+    getScenario: (char) => getChapterScenario(1, char)
   },
   {
     id: 2,
     title: "Chương 2: Hàng hóa",
     concept: "Thuộc tính của Hàng hóa & Lượng giá trị",
     description: "Hàng hóa có hai thuộc tính: Giá trị sử dụng và Giá trị. Làm thế nào để định giá sản phẩm và cân bằng giữa chất lượng sản phẩm với chi phí sản xuất?",
-    getScenario: (char) => {
-      const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
-      return {
-        intro: `Chi phí nguyên liệu đầu vào tăng cao làm ảnh hưởng đến việc tạo ra từng ${terms.productName}. Bạn đứng trước áp lực phải tối ưu hóa quy trình. Một người quen khuyên bạn nên nhập nguyên liệu rẻ hơn, chất lượng kém hơn một chút để giữ biên lợi nhuận cao. Nhưng bạn biết điều đó sẽ làm giảm chất lượng của ${terms.productPlural}.`,
-        question: "Bạn quyết định giải quyết bài toán thuộc tính hàng hóa này như thế nào?",
-        options: [
-          {
-            id: "2_A",
-            text: "Nâng cấp nguyên liệu chất lượng cao, thiết kế bao bì đẹp hơn (tăng Giá trị sử dụng) và chấp nhận giữ nguyên giá bán để giữ khách, giảm biên lợi nhuận ngắn hạn.",
-            statsEffect: { money: -3, reputation: 15, customers: 20, knowledge: 15 },
-            consequence: "Khách hàng nhận ra chất lượng vượt trội của sản phẩm. Họ rủ thêm bạn bè đến mua, lượng khách hàng tăng vọt giúp bạn bù đắp chi phí nguyên liệu nhờ quy mô bán hàng lớn.",
-            marxTheory: "Giá trị sử dụng là công dụng của vật phẩm thỏa mãn nhu cầu con người. Nâng cao chất lượng chính là củng cố giá trị sử dụng, giúp hàng hóa được xã hội thừa nhận dễ dàng hơn trên thị trường."
-          },
-          {
-            id: "2_B",
-            text: "Cắt giảm chất lượng nguyên liệu đầu vào để hạ chi phí lao động xã hội cần thiết, đồng thời giảm giá bán để thu hút khách hàng bình dân bằng giá rẻ.",
-            statsEffect: { money: 2, reputation: -15, customers: -10, knowledge: 10 },
-            consequence: "Quán đông khách ban đầu vì giá rẻ, nhưng rất nhanh sau đó, khách hàng nhận ra chất lượng giảm sút rõ rệt. Uy tín của bạn bị ảnh hưởng nghiêm trọng, khách hàng trung thành dần rời bỏ.",
-            marxTheory: "Giá trị của hàng hóa do lượng lao động xã hội cần thiết để sản xuất ra nó quyết định. Tiết kiệm chi phí bằng cách giảm chất lượng sẽ hủy hoại giá trị sử dụng, khiến người tiêu dùng quay lưng."
-          }
-        ]
-      };
-    }
+    getScenario: (char) => getChapterScenario(2, char)
   },
   {
     id: 3,
     title: "Chương 3: Tiền tệ",
     concept: "Chức năng của Tiền tệ",
     description: "Tiền tệ không chỉ là những tờ giấy bạc, nó thực hiện các chức năng cốt lõi trong nền kinh tế thị trường. Hãy lựa chọn phương thức giao dịch để tăng tốc độ lưu thông dòng tiền.",
-    getScenario: (char) => {
-      const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
-      return {
-        intro: `Trào lưu không dùng tiền mặt (Cashless) đang bùng nổ. Nhiều khách hàng đến giao dịch mua ${terms.productPlural} hỏi có quét mã QR hay chuyển khoản ví điện tử được không. Tuy nhiên, việc thiết lập hệ thống thanh toán số sẽ khiến bạn mất một chút phí duy trì cho bên thứ ba, đồng thời đôi lúc gặp lỗi mạng.`,
-        question: "Bạn lựa chọn giải pháp thanh toán nào cho doanh nghiệp của mình?",
-        options: [
-          {
-            id: "3_A",
-            text: "Chỉ chấp nhận thanh toán bằng tiền mặt để bảo toàn tuyệt đối dòng tiền thu về ngay lập tức, tránh bị lỗi hệ thống và không phải chịu bất kỳ khoản phí giao dịch nào.",
-            statsEffect: { money: -1, reputation: -10, customers: -15, knowledge: 5 },
-            consequence: "Rất nhiều khách hàng trẻ tuổi, đặc biệt là dân văn phòng lười mang tiền mặt, cảm thấy phiền phức và bỏ sang các cửa hàng đối thủ tích hợp thanh toán linh hoạt.",
-            marxTheory: "Tiền thực hiện chức năng 'phương tiện lưu thông'. Khi nền kinh tế số phát triển, hình thức tiền tệ tiến hóa để giảm thiểu chi phí và thời gian lưu thông. Từ chối thanh toán số làm cản trở quá trình trao đổi hàng hóa."
-          },
-          {
-            id: "3_B",
-            text: "Đăng ký các ví điện tử, tạo mã QR ngân hàng tiện lợi, đồng thời giảm 5% cho khách hàng thanh toán không dùng tiền mặt trong tháng đầu tiên.",
-            statsEffect: { money: -1, reputation: 10, customers: 20, knowledge: 15 },
-            consequence: "Thao tác thanh toán cực kỳ nhanh gọn, giảm thiểu thời gian chờ đợi. Khách hàng cảm thấy bạn rất chuyên nghiệp và hiện đại, giúp số lượng khách hàng tăng vọt rõ rệt.",
-            marxTheory: "Khi tiền tệ thực hiện tốt chức năng 'phương tiện thanh toán' và 'phương tiện lưu thông' thông qua công nghệ số, nó sẽ thúc đẩy tốc độ tuần hoàn của tư bản, giúp quá trình mua bán diễn ra trơn tru và nhanh chóng."
-          }
-        ]
-      };
-    }
+    getScenario: (char) => getChapterScenario(3, char)
   },
   {
     id: 4,
     title: "Chương 4: Giá trị thặng dư",
     concept: "Nguồn gốc của Giá trị thặng dư & Sức lao động",
     description: "Giá trị thặng dư là nguồn gốc tích lũy của tư bản. Làm thế nào để điều phối giờ làm việc, tiền lương và động viên sức lao động của nhân viên một cách hiệu quả?",
-    getScenario: (char) => {
-      const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
-      const staffText = char.baseStats.staff > 0 ? `${char.baseStats.staff} nhân viên hiện tại` : "một người trợ lý mới tuyển";
-      return {
-        intro: `Doanh nghiệp của bạn đang vào đợt cao điểm, khối lượng công việc tăng lên gấp đôi. ${staffText} đang bắt đầu quá tải và mệt mỏi. Bạn cần đưa ra chính sách quản lý nhân sự để duy trì hiệu suất tạo ra ${terms.productPlural} chất lượng tốt nhất.`,
-        question: "Bạn lựa chọn phương án nào để điều phối sức lao động của họ?",
-        options: [
-          {
-            id: "4_A",
-            text: "Yêu cầu nhân sự làm thêm 2 giờ mỗi ngày, tăng cường độ làm việc nhưng giữ nguyên lương cứng cũ để tối đa hóa dòng tiền thặng dư thu về ngay.",
-            statsEffect: { money: 6, reputation: -10, staff: Math.max(0, char.baseStats.staff - 1), customers: -5, knowledge: 15 },
-            consequence: "Lợi nhuận tăng nhanh trong vài ngày đầu do chi phí nhân sự giữ nguyên. Tuy nhiên, nhân sự kiệt sức, thái độ phục vụ khách hàng trở nên cáu gắt, thậm chí có người quyết định xin nghỉ việc đột ngột.",
-            marxTheory: "Đây là ví dụ điển hình về phương pháp sản xuất 'giá trị thặng dư tuyệt đối' bằng cách kéo dài ngày lao động hoặc tăng cường độ lao động. Việc bóc lột quá mức sức lao động mà không bù đắp xứng đáng sẽ dẫn đến sự hủy hoại sức lao động và sự phản kháng."
-          },
-          {
-            id: "4_B",
-            text: "Tuyển thêm cộng tác viên bán thời gian, tăng lương tăng ca (Overtime) rõ ràng theo luật và thưởng thêm dựa trên năng suất đóng góp vượt trội.",
-            statsEffect: { money: -3, reputation: 15, staff: char.baseStats.staff + 1, customers: 15, knowledge: 15 },
-            consequence: "Mặc dù chi phí lương tăng, nhân viên của bạn làm việc cực kỳ hào hứng và hăng say. Chất lượng phục vụ và sản phẩm đạt mức hoàn hảo, quán thu hút lượng khách đông đảo bền vững.",
-            marxTheory: "Theo Mác, tăng tiền lương tương xứng và nâng cao năng suất là cách thúc đẩy sản xuất 'giá trị thặng dư tương đối'. Khi công nhân được tái sản xuất sức lao động đầy đủ, họ sẽ tự nguyện cống hiến năng suất lao động cao hơn."
-          }
-        ]
-      };
-    }
+    getScenario: (char) => getChapterScenario(4, char)
   },
   {
     id: 5,
     title: "Chương 5: Cạnh tranh",
     concept: "Cạnh tranh trong nền Kinh tế thị trường",
     description: "Cạnh tranh là động lực thúc đẩy nền kinh tế nhưng cũng vô cùng tàn nhẫn. Một đối thủ mạnh xuất hiện ngay sát bên cạnh bạn để tranh giành khách hàng.",
-    getScenario: (char) => {
-      const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
-      return {
-        intro: `Một đối thủ cạnh tranh sừng sỏ vừa mở tiệm ngay sát vách doanh nghiệp của bạn. Họ chơi bài 'phá giá' cực gắt, giảm giá 30% cho tất cả sản phẩm giống hệt ${terms.productPlural} của bạn và treo băng rôn quảng cáo rầm rộ, lôi kéo một lượng lớn khách hàng quen thuộc của bạn sang trải nghiệm thử.`,
-        question: "Trước cuộc chiến khốc liệt này, bạn sẽ phản công bằng chiến thuật cạnh tranh nào?",
-        options: [
-          {
-            id: "5_A",
-            text: "Tham gia cuộc chiến dìm giá: Hạ giá bán của bạn xuống thấp hơn cả đối thủ để giữ chân khách bằng mọi giá, chấp nhận bù lỗ tài chính.",
-            statsEffect: { money: -6, reputation: -5, customers: 10, knowledge: 15 },
-            consequence: "Cả hai cửa hàng rơi vào vòng xoáy triệt hạ lẫn nhau. Lợi nhuận của bạn âm nặng, dòng tiền kiệt quệ, khách hàng chỉ đến vì giá rẻ chứ không hề có sự trung thành với thương hiệu của bạn.",
-            marxTheory: "Cạnh tranh tự do không lành mạnh bằng cách phá giá dưới chi phí sản xuất sẽ hủy hoại toàn bộ thị trường. Mác chỉ ra cạnh tranh mù quáng dẫn đến việc tự tiêu diệt giá trị thặng dư và làm kiệt quệ tích lũy tư bản."
-          },
-          {
-            id: "5_B",
-            text: "Giữ nguyên giá bán hợp lý, tập trung nâng cấp trải nghiệm khách hàng, tung ra gói combo tiện ích kèm quà tặng độc đáo riêng biệt để khác biệt hóa.",
-            statsEffect: { money: -2, reputation: 15, customers: 15, knowledge: 20 },
-            consequence: "Khách hàng nhận ra dù giá của bạn có cao hơn một chút nhưng dịch vụ chu đáo, chất lượng đồng đều và có dấu ấn cá nhân độc đáo. Bạn xây dựng được tệp khách hàng trung thành vững chắc.",
-            marxTheory: "Cạnh tranh trong kinh tế chính trị lành mạnh nhất là cạnh tranh bằng cách nâng cao năng suất cá biệt, cải tiến công nghệ và chất lượng dịch vụ nhằm hạ giá trị cá biệt của sản phẩm xuống thấp hơn giá trị xã hội."
-          }
-        ]
-      };
-    }
+    getScenario: (char) => getChapterScenario(5, char)
   },
   {
     id: 6,
     title: "Chương 6: Độc quyền",
     concept: "Sự xuất hiện của các Tổ chức Độc quyền lớn",
     description: "Các ông lớn độc quyền sở hữu tiềm lực tài chính khổng lồ có thể bóp nghẹt các cửa hàng nhỏ. Làm thế nào để sống sót trước gã khổng lồ độc quyền?",
-    getScenario: (char) => {
-      const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
-      return {
-        intro: `${terms.competitor} - một gã khổng lồ đa quốc gia có chi nhánh phủ khắp nơi vừa khai trương đại siêu thị ngay đầu phố. Họ cung cấp ${terms.monopolyProduct} với quy trình tự động hóa tối tân, chạy quảng cáo phủ sóng tivi, điện thoại của mọi người dân xung quanh, đe dọa nuốt chửng các doanh nghiệp nhỏ lẻ như bạn.`,
-        question: "Làm thế nào để doanh nghiệp nhỏ của bạn có thể sống sót và phát triển trước sức ép của tổ chức độc quyền?",
-        options: [
-          {
-            id: "6_A",
-            text: "Vay mượn thêm vốn lớn để lao vào cuộc đua quảng cáo truyền hình, treo banner lớn ngoài đường và mở thêm chi nhánh mới nhằm đối đầu trực tiếp về quy mô.",
-            statsEffect: { money: -15, reputation: 10, customers: 5, knowledge: 15 },
-            consequence: "Số tiền đầu tư khổng lồ nhanh chóng tan biến mà không đem lại hiệu quả đáng kể trước bộ máy truyền thông khổng lồ của gã độc quyền. Bạn rơi vào tình trạng nợ nần chồng chất.",
-            marxTheory: "Độc quyền xuất hiện từ sự tích tụ và tập trung tư bản cao độ. Các tổ chức độc quyền nắm giữ ưu thế áp đảo về quy mô kinh tế và công nghệ, việc đối đầu trực diện về quy mô luôn mang lại thất bại cho tư bản nhỏ lẻ."
-          },
-          {
-            id: "6_B",
-            text: "Tìm kiếm thị trường ngách: Thay đổi thiết kế, hướng đến phân khúc sản phẩm thủ công tinh tế, mang tính cá nhân hóa sâu sắc mà dây chuyền công nghiệp độc quyền không thể làm được.",
-            statsEffect: { money: -3, reputation: 15, customers: 15, knowledge: 20 },
-            consequence: "Các ông lớn công nghiệp chỉ sản xuất hàng loạt đại trà. Khi bạn tập trung vào sản phẩm thủ công tinh xảo, kể câu chuyện thương hiệu đầy cảm xúc, tệp khách hàng cao cấp tìm đến bạn ngày một đông.",
-            marxTheory: "Trong giai đoạn độc quyền, quy luật giá trị thặng dư biểu hiện thành quy luật lợi nhuận độc quyền cao. Tuy nhiên, thị trường ngách cá nhân hóa là nơi quy luật giá trị tự do vẫn bảo vệ các nhà sản xuất nhỏ năng động."
-          }
-        ]
-      };
-    }
+    getScenario: (char) => getChapterScenario(6, char)
   },
   {
     id: 7,
     title: "Chương 7: Kinh tế thị trường định hướng XHCN",
     concept: "Vai trò quản lý của Nhà nước & Kinh tế định hướng XHCN",
     description: "Nền kinh tế thị trường định hướng xã hội chủ nghĩa tại Việt Nam gắn liền phát triển kinh tế với công bằng xã hội. Hãy tận dụng chính sách nhà nước để cất cánh.",
-    getScenario: (char) => {
-      const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
-      return {
-        intro: `Chính phủ vừa ban hành gói chính sách hỗ trợ phát triển bền vững cho các doanh nghiệp vừa và nhỏ, bao gồm ưu đãi lãi suất vay vốn 3% cho chuyển đổi số và hoàn thuế VAT cho mô hình đạt chuẩn xanh, thân thiện môi trường. Tuy nhiên, điều này đòi hỏi bạn phải kê khai minh bạch toàn bộ tài chính và đóng bảo hiểm xã hội đầy đủ cho toàn bộ lao động của mình.`,
-        question: "Bạn quyết định đón nhận chính sách vĩ mô này như thế nào?",
-        options: [
-          {
-            id: "7_A",
-            text: "Lập hồ sơ giả để nhận ưu đãi thuế nhưng tìm cách lách luật: khai khống số liệu chuyển đổi số, tiếp tục trốn đóng bảo hiểm cho nhân sự để giữ lại nhiều lợi nhuận nhất.",
-            statsEffect: { money: 8, reputation: -25, staff: Math.max(0, char.baseStats.staff - 2), customers: -15, knowledge: 10 },
-            consequence: "Bạn kiếm được một khoản tiền gian lận ngắn hạn. Tuy nhiên, thanh tra nhà nước phát hiện sai phạm nghiêm trọng. Doanh nghiệp bị phạt tiền nặng, thu hồi giấy phép ưu đãi, bị bêu tên công khai khiến khách hàng tẩy chay.",
-            marxTheory: "Nhà nước đóng vai trò điều tiết, sửa chữa các thất bại của thị trường và đảm bảo công bằng xã hội. Sự phát triển chụp giật, bất chấp luật pháp sẽ bị đào thải bởi công cụ pháp lý mạnh mẽ của Nhà nước."
-          },
-          {
-            id: "7_B",
-            text: "Nghiêm túc đầu tư số hóa hệ thống bán hàng, đăng ký bảo hiểm đầy đủ cho lao động, cam kết sử dụng bao bì tái chế bảo vệ môi trường để đạt chứng chỉ Doanh nghiệp Xanh.",
-            statsEffect: { money: -2, reputation: 25, staff: char.baseStats.staff + 1, customers: 20, knowledge: 25 },
-            consequence: "Bạn nhận được khoản hỗ trợ vay vốn lớn của Nhà nước để nâng cấp ${terms.investmentOption}. Người tiêu dùng Việt Nam vô cùng yêu mến và ưu tiên lựa chọn Doanh nghiệp Xanh có trách nhiệm xã hội.",
-            marxTheory: "Kinh tế thị trường định hướng xã hội chủ nghĩa thực hiện sự kết hợp hài hòa giữa lợi ích kinh tế cá nhân với lợi ích xã hội dưới sự quản lý của Nhà nước Pháp quyền XHCN, thúc đẩy sự thịnh vượng bền vững cho toàn dân."
-          }
-        ]
-      };
-    }
+    getScenario: (char) => getChapterScenario(7, char)
   }
 ];
 
