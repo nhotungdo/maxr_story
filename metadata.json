@@ -1,0 +1,6 @@
+{
+  "name": "Marx Story",
+  "description": "Hành trình Kinh tế Chính trị Mác - Lênin: game tương tác kể chuyện kết hợp mô phỏng kinh doanh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
