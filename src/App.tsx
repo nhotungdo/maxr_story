@@ -292,14 +292,14 @@ export default function App() {
       <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" />
 
       {/* HEADER */}
-      <header className="bg-[#991B1B] text-white flex flex-col md:flex-row items-center justify-between px-6 py-4 shadow-md border-b-4 border-[#1A1A1A] relative z-20">
-        <div className="flex items-center gap-4 mb-3 md:mb-0 cursor-pointer" onClick={handleRestart}>
-          <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center border-2 border-[#1A1A1A] shadow-[2px_2px_0px_#1A1A1A]">
-            <span className="text-[#991B1B] font-black text-2xl ">M</span>
+      <header className="bg-[#991B1B] text-white flex flex-row flex-wrap items-center justify-between px-4 md:px-6 py-3 md:py-4 shadow-md border-b-4 border-[#1A1A1A] relative z-20 gap-y-3">
+        <div className="flex items-center gap-3 md:gap-4 cursor-pointer" onClick={handleRestart}>
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-sm flex items-center justify-center border-2 border-[#1A1A1A] shadow-[2px_2px_0px_#1A1A1A] shrink-0">
+            <span className="text-[#991B1B] font-black text-xl md:text-2xl ">M</span>
           </div>
           <div>
-            <h1 className="text-2xl font-black uppercase tracking-tighter  leading-none">Marx Story</h1>
-            <p className="text-sm uppercase tracking-[0.2em] font-medium opacity-85 ">Hành trình Kinh tế Chính trị Mác - Lênin</p>
+            <h1 className="text-lg md:text-2xl font-black uppercase tracking-tighter leading-none">Marx Story</h1>
+            <p className="text-[10px] md:text-sm uppercase tracking-[0.2em] font-medium opacity-85 hidden md:block">Hành trình Kinh tế Chính trị Mác - Lênin</p>
           </div>
         </div>
 
@@ -312,7 +312,7 @@ export default function App() {
           </div>
         )}
 
-        <div className="flex gap-3 mt-3 md:mt-0">
+        <div className="flex gap-2 md:gap-3">
           <button
             onClick={toggleMute}
             className="px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-sm transition-colors text-white flex items-center justify-center"
@@ -339,7 +339,7 @@ export default function App() {
 
       {/* UNIFIED STATS BAR (ALL SCREENS) */}
       {gameState.character && (
-        <div className="bg-[#1A1A1A] text-white border-b-2 border-[#1A1A1A] px-2 py-2 flex justify-center gap-4 md:gap-12 shadow-[inset_0_-4px_10px_rgba(0,0,0,0.4)] z-10 relative flex-wrap">
+        <div className="bg-[#1A1A1A] text-white border-b-2 border-[#1A1A1A] px-4 md:px-2 py-2 flex md:justify-center gap-6 md:gap-12 shadow-[inset_0_-4px_10px_rgba(0,0,0,0.4)] z-10 relative overflow-x-auto hide-scrollbar whitespace-nowrap snap-x">
           <div className="text-center group relative">
             <p className="text-[10px] md:text-xs uppercase text-red-200 flex items-center justify-center gap-1">
               <Coins className="w-3 h-3 text-amber-400" /> Vốn
@@ -417,7 +417,7 @@ export default function App() {
 
         {/* LEFT PANEL: Selected Character & Stats Progress (Show only when playing) */}
         {gameState.character && gameState.gameState !== "SELECT_CHARACTER" && (
-          <aside className="w-full md:w-[360px] bg-[#E8E6E1] border-b-2 md:border-b-0 md:border-r-2 border-[#1A1A1A] p-5 flex flex-col justify-between overflow-y-auto">
+          <aside className="order-last md:order-first w-full md:w-[360px] bg-[#E8E6E1] border-t-2 md:border-t-0 md:border-r-2 border-[#1A1A1A] p-5 flex flex-col justify-between overflow-y-auto shrink-0">
             <div className="space-y-4">
               {/* Character card */}
               <div className="bg-[#D1CFC9] border-2 border-[#1A1A1A] relative overflow-hidden shadow-[4px_4px_0px_#1A1A1A] rounded-sm group">
