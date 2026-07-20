@@ -20,8 +20,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 15, // 15 triệu VNĐ
-      reputation: 60,
-      customers: 40,
+      reputation: 0,
+      customers: 0,
       staff: 1,
       knowledge: 0
     }
@@ -43,8 +43,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 12,
-      reputation: 65,
-      customers: 50,
+      reputation: 0,
+      customers: 0,
       staff: 1,
       knowledge: 0
     }
@@ -66,8 +66,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 20,
-      reputation: 55,
-      customers: 30,
+      reputation: 0,
+      customers: 0,
       staff: 1,
       knowledge: 0
     }
@@ -89,8 +89,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 35,
-      reputation: 50,
-      customers: 25,
+      reputation: 0,
+      customers: 0,
       staff: 2,
       knowledge: 0
     }
@@ -112,8 +112,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 5,
-      reputation: 70,
-      customers: 20,
+      reputation: 0,
+      customers: 0,
       staff: 0,
       knowledge: 0
     }
@@ -135,8 +135,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 8,
-      reputation: 60,
-      customers: 35,
+      reputation: 0,
+      customers: 0,
       staff: 1,
       knowledge: 0
     }
@@ -158,8 +158,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 6,
-      reputation: 60,
-      customers: 15,
+      reputation: 0,
+      customers: 0,
       staff: 0,
       knowledge: 0
     }
@@ -181,8 +181,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 60,
-      reputation: 50,
-      customers: 10,
+      reputation: 0,
+      customers: 0,
       staff: 6,
       knowledge: 0
     }
@@ -204,8 +204,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 50,
-      reputation: 55,
-      customers: 12,
+      reputation: 0,
+      customers: 0,
       staff: 4,
       knowledge: 0
     }
@@ -227,8 +227,8 @@ export const CHARACTERS: Character[] = [
     ],
     baseStats: {
       money: 100,
-      reputation: 40,
-      customers: 8,
+      reputation: 0,
+      customers: 0,
       staff: 8,
       knowledge: 0
     }
@@ -248,7 +248,7 @@ export const CHARACTERS: Character[] = [
       "Bị cò đất lừa gạt",
       "Khách hàng thay đổi ý định phút chót"
     ],
-    baseStats: { money: 10, reputation: 50, customers: 15, staff: 0, knowledge: 0 }
+    baseStats: { money: 10, reputation: 0, customers: 0, staff: 0, knowledge: 0 }
   },
   {
     id: "nga_spa",
@@ -265,7 +265,7 @@ export const CHARACTERS: Character[] = [
       "Khó quản lý tay nghề nhân viên",
       "Nguy cơ rủi ro y tế"
     ],
-    baseStats: { money: 25, reputation: 60, customers: 30, staff: 3, knowledge: 0 }
+    baseStats: { money: 25, reputation: 0, customers: 0, staff: 3, knowledge: 0 }
   },
   {
     id: "hai_tutor",
@@ -282,7 +282,7 @@ export const CHARACTERS: Character[] = [
       "Sự xuất hiện của các trung tâm lớn",
       "Áp lực thành tích từ phụ huynh"
     ],
-    baseStats: { money: 5, reputation: 70, customers: 20, staff: 0, knowledge: 0 }
+    baseStats: { money: 5, reputation: 0, customers: 0, staff: 0, knowledge: 0 }
   },
   {
     id: "vy_baker",
@@ -299,7 +299,7 @@ export const CHARACTERS: Character[] = [
       "Làm việc vào các ngày lễ Tết vất vả",
       "Cạnh tranh với chuỗi bánh công nghiệp"
     ],
-    baseStats: { money: 15, reputation: 65, customers: 40, staff: 2, knowledge: 0 }
+    baseStats: { money: 15, reputation: 0, customers: 0, staff: 2, knowledge: 0 }
   },
   {
     id: "kien_gym",
@@ -316,7 +316,7 @@ export const CHARACTERS: Character[] = [
       "Chi phí mặt bằng rất lớn",
       "Cạnh tranh với hệ thống gym 5 sao"
     ],
-    baseStats: { money: 40, reputation: 50, customers: 35, staff: 2, knowledge: 0 }
+    baseStats: { money: 40, reputation: 0, customers: 0, staff: 2, knowledge: 0 }
   },
   {
     id: "chau_pet",
@@ -333,7 +333,7 @@ export const CHARACTERS: Character[] = [
       "Đòi hỏi không gian vệ sinh sạch sẽ",
       "Xu hướng phụ kiện thay đổi nhanh"
     ],
-    baseStats: { money: 30, reputation: 55, customers: 25, staff: 2, knowledge: 0 }
+    baseStats: { money: 30, reputation: 0, customers: 0, staff: 2, knowledge: 0 }
   },
   {
     id: "phong_garage",
@@ -350,7 +350,7 @@ export const CHARACTERS: Character[] = [
       "Rủi ro khi đền bù phụ tùng đắt tiền",
       "Vốn ôm phụ tùng rất lớn"
     ],
-    baseStats: { money: 50, reputation: 60, customers: 15, staff: 4, knowledge: 0 }
+    baseStats: { money: 50, reputation: 0, customers: 0, staff: 4, knowledge: 0 }
   },
   {
     id: "my_florist",
@@ -367,7 +367,7 @@ export const CHARACTERS: Character[] = [
       "Phụ thuộc lớn vào tính thời vụ",
       "Mức độ cạnh tranh cực kỳ gay gắt"
     ],
-    baseStats: { money: 12, reputation: 65, customers: 30, staff: 1, knowledge: 0 }
+    baseStats: { money: 12, reputation: 0, customers: 0, staff: 1, knowledge: 0 }
   },
   {
     id: "dat_gamer",
@@ -384,7 +384,7 @@ export const CHARACTERS: Character[] = [
       "Phụ thuộc vào thuật toán nền tảng",
       "Áp lực tâm lý từ cộng đồng mạng"
     ],
-    baseStats: { money: 10, reputation: 80, customers: 100, staff: 0, knowledge: 0 }
+    baseStats: { money: 10, reputation: 0, customers: 0, staff: 0, knowledge: 0 }
   },
   {
     id: "hoa_travel",
@@ -401,7 +401,7 @@ export const CHARACTERS: Character[] = [
       "Cạnh tranh với các nền tảng tự đặt phòng (OTA)",
       "Giải quyết khiếu nại liên tục"
     ],
-    baseStats: { money: 15, reputation: 60, customers: 20, staff: 1, knowledge: 0 }
+    baseStats: { money: 15, reputation: 0, customers: 0, staff: 1, knowledge: 0 }
   }
 ];
 

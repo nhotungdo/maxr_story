@@ -150,7 +150,7 @@ export default function App() {
     const newStats = { ...gameState.stats };
     Object.entries(option.statsEffect).forEach(([key, val]) => {
       const k = key as keyof GameStats;
-      if (k === 'knowledge') {
+      if (k === 'knowledge' || k === 'reputation' || k === 'customers') {
         newStats[k] = Math.min(100, Math.max(0, newStats[k] + (val || 0)));
       } else {
         newStats[k] = Math.max(0, newStats[k] + (val || 0));
