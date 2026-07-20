@@ -192,7 +192,7 @@ export default function App() {
       } else {
         throw new Error("Failed to fetch feedback");
       }
-      
+
       setGameState(prev => ({
         ...prev,
         currentAiFeedback: feedbackResult,
@@ -523,8 +523,8 @@ export default function App() {
                     <div
                       key={badge.id}
                       className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all group relative cursor-help ${isUnlocked
-                          ? "border-[#991B1B] bg-white text-xl shadow-[2px_2px_0px_#1A1A1A]"
-                          : "border-gray-300 bg-gray-100 text-gray-400 opacity-40 grayscale"
+                        ? "border-[#991B1B] bg-white text-xl shadow-[2px_2px_0px_#1A1A1A]"
+                        : "border-gray-300 bg-gray-100 text-gray-400 opacity-40 grayscale"
                         }`}
                       title={`${badge.name}: ${badge.description} (${isUnlocked ? "Đã mở" : `Yêu cầu Tri thức >= ${badge.unlockedAtKnowledge}`})`}
                     >
@@ -605,8 +605,8 @@ export default function App() {
                             key={char.id}
                             onClick={() => setSelectedCharPreview(char)}
                             className={`p-3 text-left border-2 rounded-sm transition-all flex items-center gap-3 relative ${isSelected
-                                ? "bg-white border-[#991B1B] shadow-[4px_4px_0px_#1A1A1A] scale-[1.01]"
-                                : "bg-[#E8E6E1]/50 border-[#1A1A1A]/30 hover:border-[#1A1A1A] hover:bg-white"
+                              ? "bg-white border-[#991B1B] shadow-[4px_4px_0px_#1A1A1A] scale-[1.01]"
+                              : "bg-[#E8E6E1]/50 border-[#1A1A1A]/30 hover:border-[#1A1A1A] hover:bg-white"
                               }`}
                           >
                             <div className="w-10 h-10 bg-[#FAF9F5] border border-[#1A1A1A] rounded-full flex items-center justify-center text-2xl shadow-[1px_1px_0px_#1A1A1A]">
@@ -779,8 +779,8 @@ export default function App() {
                         <span
                           key={key}
                           className={`text-sm font-bold px-2 py-0.5 rounded-full border ${isPositive
-                              ? "bg-emerald-50 border-emerald-300 text-emerald-700"
-                              : "bg-rose-50 border-rose-300 text-rose-700"
+                            ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+                            : "bg-rose-50 border-rose-300 text-rose-700"
                             }`}
                         >
                           {iconMap[key]} {isPositive ? `+${value}` : value}
@@ -985,7 +985,7 @@ export default function App() {
               </button>
             </div>
             <p className="text-sm font-bold uppercase tracking-[0.2em] opacity-55  text-[#1A1A1A]">
-              Bản quyền &copy; 2026 Marx Story Team • Chuyên đề Giáo dục đổi mới
+              Bản quyền &copy; 2026 Marx Story Team
             </p>
           </footer>
         </div>
