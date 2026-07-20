@@ -37,7 +37,8 @@ export interface Chapter {
   title: string;
   concept: string;
   description: string;
-  getScenario: (character: Character) => {
+  getScenario: (character: Character, currentStaff: number) => {
+    id?: string;
     intro: string;
     question: string;
     options: Option[];

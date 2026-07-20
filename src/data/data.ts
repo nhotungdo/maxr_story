@@ -23,7 +23,7 @@ export const CHARACTERS: Character[] = [
       reputation: 60,
       customers: 40,
       staff: 1,
-      knowledge: 10
+      knowledge: 0
     }
   },
   {
@@ -46,7 +46,7 @@ export const CHARACTERS: Character[] = [
       reputation: 65,
       customers: 50,
       staff: 1,
-      knowledge: 10
+      knowledge: 0
     }
   },
   {
@@ -69,7 +69,7 @@ export const CHARACTERS: Character[] = [
       reputation: 55,
       customers: 30,
       staff: 1,
-      knowledge: 15
+      knowledge: 0
     }
   },
   {
@@ -92,7 +92,7 @@ export const CHARACTERS: Character[] = [
       reputation: 50,
       customers: 25,
       staff: 2,
-      knowledge: 20
+      knowledge: 0
     }
   },
   {
@@ -115,7 +115,7 @@ export const CHARACTERS: Character[] = [
       reputation: 70,
       customers: 20,
       staff: 0,
-      knowledge: 10
+      knowledge: 0
     }
   },
   {
@@ -138,7 +138,7 @@ export const CHARACTERS: Character[] = [
       reputation: 60,
       customers: 35,
       staff: 1,
-      knowledge: 15
+      knowledge: 0
     }
   },
   {
@@ -161,7 +161,7 @@ export const CHARACTERS: Character[] = [
       reputation: 60,
       customers: 15,
       staff: 0,
-      knowledge: 25
+      knowledge: 0
     }
   },
   {
@@ -184,7 +184,7 @@ export const CHARACTERS: Character[] = [
       reputation: 50,
       customers: 10,
       staff: 6,
-      knowledge: 20
+      knowledge: 0
     }
   },
   {
@@ -207,7 +207,7 @@ export const CHARACTERS: Character[] = [
       reputation: 55,
       customers: 12,
       staff: 4,
-      knowledge: 15
+      knowledge: 0
     }
   },
   {
@@ -230,7 +230,7 @@ export const CHARACTERS: Character[] = [
       reputation: 40,
       customers: 8,
       staff: 8,
-      knowledge: 30
+      knowledge: 0
     }
   },
   {
@@ -248,7 +248,7 @@ export const CHARACTERS: Character[] = [
       "Bị cò đất lừa gạt",
       "Khách hàng thay đổi ý định phút chót"
     ],
-    baseStats: { money: 10, reputation: 50, customers: 15, staff: 0, knowledge: 20 }
+    baseStats: { money: 10, reputation: 50, customers: 15, staff: 0, knowledge: 0 }
   },
   {
     id: "nga_spa",
@@ -265,7 +265,7 @@ export const CHARACTERS: Character[] = [
       "Khó quản lý tay nghề nhân viên",
       "Nguy cơ rủi ro y tế"
     ],
-    baseStats: { money: 25, reputation: 60, customers: 30, staff: 3, knowledge: 15 }
+    baseStats: { money: 25, reputation: 60, customers: 30, staff: 3, knowledge: 0 }
   },
   {
     id: "hai_tutor",
@@ -282,7 +282,7 @@ export const CHARACTERS: Character[] = [
       "Sự xuất hiện của các trung tâm lớn",
       "Áp lực thành tích từ phụ huynh"
     ],
-    baseStats: { money: 5, reputation: 70, customers: 20, staff: 0, knowledge: 40 }
+    baseStats: { money: 5, reputation: 70, customers: 20, staff: 0, knowledge: 0 }
   },
   {
     id: "vy_baker",
@@ -299,7 +299,7 @@ export const CHARACTERS: Character[] = [
       "Làm việc vào các ngày lễ Tết vất vả",
       "Cạnh tranh với chuỗi bánh công nghiệp"
     ],
-    baseStats: { money: 15, reputation: 65, customers: 40, staff: 2, knowledge: 15 }
+    baseStats: { money: 15, reputation: 65, customers: 40, staff: 2, knowledge: 0 }
   },
   {
     id: "kien_gym",
@@ -316,7 +316,7 @@ export const CHARACTERS: Character[] = [
       "Chi phí mặt bằng rất lớn",
       "Cạnh tranh với hệ thống gym 5 sao"
     ],
-    baseStats: { money: 40, reputation: 50, customers: 35, staff: 2, knowledge: 20 }
+    baseStats: { money: 40, reputation: 50, customers: 35, staff: 2, knowledge: 0 }
   },
   {
     id: "chau_pet",
@@ -333,7 +333,7 @@ export const CHARACTERS: Character[] = [
       "Đòi hỏi không gian vệ sinh sạch sẽ",
       "Xu hướng phụ kiện thay đổi nhanh"
     ],
-    baseStats: { money: 30, reputation: 55, customers: 25, staff: 2, knowledge: 20 }
+    baseStats: { money: 30, reputation: 55, customers: 25, staff: 2, knowledge: 0 }
   },
   {
     id: "phong_garage",
@@ -350,7 +350,7 @@ export const CHARACTERS: Character[] = [
       "Rủi ro khi đền bù phụ tùng đắt tiền",
       "Vốn ôm phụ tùng rất lớn"
     ],
-    baseStats: { money: 50, reputation: 60, customers: 15, staff: 4, knowledge: 25 }
+    baseStats: { money: 50, reputation: 60, customers: 15, staff: 4, knowledge: 0 }
   },
   {
     id: "my_florist",
@@ -367,7 +367,7 @@ export const CHARACTERS: Character[] = [
       "Phụ thuộc lớn vào tính thời vụ",
       "Mức độ cạnh tranh cực kỳ gay gắt"
     ],
-    baseStats: { money: 12, reputation: 65, customers: 30, staff: 1, knowledge: 15 }
+    baseStats: { money: 12, reputation: 65, customers: 30, staff: 1, knowledge: 0 }
   },
   {
     id: "dat_gamer",
@@ -384,7 +384,7 @@ export const CHARACTERS: Character[] = [
       "Phụ thuộc vào thuật toán nền tảng",
       "Áp lực tâm lý từ cộng đồng mạng"
     ],
-    baseStats: { money: 10, reputation: 80, customers: 100, staff: 0, knowledge: 20 }
+    baseStats: { money: 10, reputation: 80, customers: 100, staff: 0, knowledge: 0 }
   },
   {
     id: "hoa_travel",
@@ -401,7 +401,7 @@ export const CHARACTERS: Character[] = [
       "Cạnh tranh với các nền tảng tự đặt phòng (OTA)",
       "Giải quyết khiếu nại liên tục"
     ],
-    baseStats: { money: 15, reputation: 60, customers: 20, staff: 1, knowledge: 25 }
+    baseStats: { money: 15, reputation: 60, customers: 20, staff: 1, knowledge: 0 }
   }
 ];
 
@@ -583,49 +583,49 @@ export const CHAPTERS: Chapter[] = [
     title: "Chương 1: Đối tượng và phương pháp nghiên cứu",
     concept: "Quy luật vận động khách quan của thị trường",
     description: "Bạn vừa bước vào kinh doanh. Mọi thứ thật bỡ ngỡ. Tại sao có ngày đông khách nhưng có ngày lại vắng ngắt? Phải chăng do may rủi hay có quy luật kinh tế ẩn giấu đằng sau?",
-    getScenario: (char) => getChapterScenario(1, char)
+    getScenario: (char, currentStaff) => getChapterScenario(1, char, currentStaff)
   },
   {
     id: 2,
     title: "Chương 2: Hàng hóa",
     concept: "Thuộc tính của Hàng hóa & Lượng giá trị",
     description: "Hàng hóa có hai thuộc tính: Giá trị sử dụng và Giá trị. Làm thế nào để định giá sản phẩm và cân bằng giữa chất lượng sản phẩm với chi phí sản xuất?",
-    getScenario: (char) => getChapterScenario(2, char)
+    getScenario: (char, currentStaff) => getChapterScenario(1, char, currentStaff)
   },
   {
     id: 3,
     title: "Chương 3: Tiền tệ",
     concept: "Chức năng của Tiền tệ",
     description: "Tiền tệ không chỉ là những tờ giấy bạc, nó thực hiện các chức năng cốt lõi trong nền kinh tế thị trường. Hãy lựa chọn phương thức giao dịch để tăng tốc độ lưu thông dòng tiền.",
-    getScenario: (char) => getChapterScenario(3, char)
+    getScenario: (char, currentStaff) => getChapterScenario(2, char, currentStaff)
   },
   {
     id: 4,
     title: "Chương 4: Giá trị thặng dư",
     concept: "Nguồn gốc của Giá trị thặng dư & Sức lao động",
     description: "Giá trị thặng dư là nguồn gốc tích lũy của tư bản. Làm thế nào để điều phối giờ làm việc, tiền lương và động viên sức lao động của nhân viên một cách hiệu quả?",
-    getScenario: (char) => getChapterScenario(4, char)
+    getScenario: (char, currentStaff) => getChapterScenario(3, char, currentStaff)
   },
   {
     id: 5,
     title: "Chương 5: Cạnh tranh",
     concept: "Cạnh tranh trong nền Kinh tế thị trường",
     description: "Cạnh tranh là động lực thúc đẩy nền kinh tế nhưng cũng vô cùng tàn nhẫn. Một đối thủ mạnh xuất hiện ngay sát bên cạnh bạn để tranh giành khách hàng.",
-    getScenario: (char) => getChapterScenario(5, char)
+    getScenario: (char, currentStaff) => getChapterScenario(4, char, currentStaff)
   },
   {
     id: 6,
     title: "Chương 6: Độc quyền",
     concept: "Sự xuất hiện của các Tổ chức Độc quyền lớn",
     description: "Các ông lớn độc quyền sở hữu tiềm lực tài chính khổng lồ có thể bóp nghẹt các cửa hàng nhỏ. Làm thế nào để sống sót trước gã khổng lồ độc quyền?",
-    getScenario: (char) => getChapterScenario(6, char)
+    getScenario: (char, currentStaff) => getChapterScenario(5, char, currentStaff)
   },
   {
     id: 7,
     title: "Chương 7: Kinh tế thị trường định hướng XHCN",
     concept: "Vai trò quản lý của Nhà nước & Kinh tế định hướng XHCN",
     description: "Nền kinh tế thị trường định hướng xã hội chủ nghĩa tại Việt Nam gắn liền phát triển kinh tế với công bằng xã hội. Hãy tận dụng chính sách nhà nước để cất cánh.",
-    getScenario: (char) => getChapterScenario(7, char)
+    getScenario: (char, currentStaff) => getChapterScenario(6, char, currentStaff)
   }
 ];
 

@@ -19,6 +19,7 @@ export type ScenarioNode = {
   wrong: string;
   nextCorrectId?: string;
   nextWrongId?: string;
+  requiresStaff?: boolean; // Nếu true, chỉ hiện ra nếu số lượng nhân viên > 0
 };
 
 // Hàm nội suy
@@ -201,18 +202,31 @@ export const chapterTrees: Record<number, { theory: string, rootNodes: ScenarioN
       {
         id: "c4_root_1",
         tags: [],
+        requiresStaff: true,
         intro: "Đơn đặt hàng {productPlural} tăng đột biến, {workforce} phải làm việc quá sức.",
         question: "Bạn sẽ khai thác Giá trị thặng dư thông qua việc tái sản xuất sức lao động hay bóc lột tuyệt đối?",
         correct: "Đãi ngộ nhân viên xứng đáng, trả lương làm thêm giờ sòng phẳng để giữ tinh thần.",
         wrong: "Bắt ép {workforce} làm thêm giờ không lương, vắt kiệt sức lao động của họ.",
         nextCorrectId: "c4_sub_1_c",
         nextWrongId: "c4_sub_1_w"
+      },
+      {
+        id: "c4_root_nostaff",
+        tags: [],
+        requiresStaff: false,
+        intro: "Vì bạn tự làm một mình, khi đơn đặt hàng {productPlural} tăng vọt, bạn phải làm việc 16 tiếng một ngày đến kiệt sức.",
+        question: "Là người lao động tự do, bạn sẽ gia tăng giá trị thặng dư bằng phương pháp nào để không hủy hoại sức khỏe?",
+        correct: "Đầu tư mua máy móc hiện đại hoặc phần mềm để tăng năng suất (Giá trị thặng dư tương đối).",
+        wrong: "Tiếp tục thức trắng đêm cày cuốc, vắt kiệt sức lao động của chính mình (Giá trị thặng dư tuyệt đối).",
+        nextCorrectId: "c4_sub_ns_c",
+        nextWrongId: "c4_sub_ns_w"
       }
     ],
     subNodes: {
       "c4_sub_1_c": {
         id: "c4_sub_1_c",
         tags: [],
+        requiresStaff: true,
         intro: "Nhân viên phấn khởi làm việc, nhưng chi phí biến đổi (tiền lương) đội lên rất cao làm giảm biên lợi nhuận.",
         question: "Để giảm thời gian lao động tất yếu, bạn sẽ áp dụng biện pháp sản xuất giá trị thặng dư tương đối nào?",
         correct: "Cải tiến công cụ lao động, áp dụng quy trình mới để tăng năng suất tương đối bù đắp chi phí.",
@@ -221,10 +235,29 @@ export const chapterTrees: Record<number, { theory: string, rootNodes: ScenarioN
       "c4_sub_1_w": {
         id: "c4_sub_1_w",
         tags: [],
+        requiresStaff: true,
         intro: "{workforce} kiệt sức, bất mãn và rủ nhau đình công tập thể đúng lúc cao điểm.",
         question: "Mâu thuẫn lợi ích gay gắt giữa người sử dụng lao động và người lao động đã bùng phát. Bạn sẽ xử lý thế nào?",
         correct: "Xin lỗi, chấp nhận yêu sách hợp lý của công nhân và cải thiện ngay môi trường làm việc.",
         wrong: "Gọi giang hồ đến đe dọa ép công nhân phải trở lại làm việc."
+      },
+      "c4_sub_ns_c": {
+        id: "c4_sub_ns_c",
+        tags: [],
+        requiresStaff: false,
+        intro: "Công cụ mới giúp bạn làm ra nhiều {productPlural} hơn trong thời gian ngắn, nhưng tiền đầu tư khá cao.",
+        question: "Để tối ưu hóa chi phí cấu tạo hữu cơ tư bản, bạn sẽ làm gì?",
+        correct: "Nhận thêm nhiều đơn hàng đa dạng để khai thác tối đa công suất máy móc/phần mềm.",
+        wrong: "Tắt máy/phần mềm để đắp chiếu vì xót tiền điện."
+      },
+      "c4_sub_ns_w": {
+        id: "c4_sub_ns_w",
+        tags: [],
+        requiresStaff: false,
+        intro: "Làm việc quá sức khiến bạn đổ bệnh, phải đóng cửa nghỉ ngơi dài ngày.",
+        question: "Sức lao động - loại hàng hóa đặc biệt của chính bạn đã bị hao mòn nghiêm trọng. Bạn cần làm gì?",
+        correct: "Nghỉ ngơi tĩnh dưỡng hoàn toàn, sau đó vay mượn thêm vốn để duy trì cửa hàng.",
+        wrong: "Uống thuốc giảm đau cực mạnh để ráng làm tiếp vì sợ mất khách."
       }
     }
   },
@@ -354,7 +387,7 @@ export function getSpecificScenario(chapterId: number, scenarioId: string, char:
   const correctOpt: Option = {
     id: `${scenarioId}_correct`,
     text: `${cDecStr} (Tốn ${cost} vốn)`,
-    statsEffect: { money: profit, reputation: 10, customers: 10, knowledge: 10 },
+    statsEffect: { money: profit, reputation: 10, customers: 10, knowledge: 8 },
     consequence: "Lựa chọn tốt! Hệ quả tích cực đã xảy ra.",
     marxTheory: chap.theory,
     nextScenarioId: node.nextCorrectId
@@ -363,7 +396,7 @@ export function getSpecificScenario(chapterId: number, scenarioId: string, char:
   const wrongOpt: Option = {
     id: `${scenarioId}_wrong`,
     text: `${wDecStr} (Tốn ${cost} vốn)`,
-    statsEffect: { money: -loss, reputation: -10, customers: -5, knowledge: 5 },
+    statsEffect: { money: -loss, reputation: -10, customers: -5, knowledge: 0 },
     consequence: "Sai lầm nghiêm trọng! Bạn tiếp tục gặp rắc rối.",
     marxTheory: chap.theory,
     nextScenarioId: node.nextWrongId
@@ -380,14 +413,19 @@ export function getSpecificScenario(chapterId: number, scenarioId: string, char:
 /**
  * Lấy tình huống gốc (root) cho chương dựa trên tag
  */
-export function getChapterScenario(chapterId: number, char: Character) {
+export function getChapterScenario(chapterId: number, char: Character, currentStaff: number) {
   const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
   const charTags = char.tags || [];
 
   const chap = chapterTrees[chapterId];
   
-  // Lọc các root nodes phù hợp với tag của nhân vật
+  // Lọc các root nodes phù hợp với tag của nhân vật và số lượng nhân sự
   const validNodes = chap.rootNodes.filter(node => {
+    // Nếu node yêu cầu có nhân viên nhưng hiện tại không có nhân viên -> loại
+    if (node.requiresStaff === true && currentStaff <= 0) return false;
+    // Nếu node dành riêng cho 0 nhân viên nhưng hiện đang có nhân viên -> loại
+    if (node.requiresStaff === false && currentStaff > 0) return false;
+
     if (node.tags.length === 0) return true; // Áp dụng cho mọi ngành
     return node.tags.some(tag => charTags.includes(tag));
   });
@@ -410,7 +448,7 @@ export function getChapterScenario(chapterId: number, char: Character) {
   const correctOpt: Option = {
     id: `${node.id}_correct`,
     text: `${cDecStr} (Tốn ${cost} vốn)`,
-    statsEffect: { money: profit, reputation: 10, customers: 10, knowledge: 10 },
+    statsEffect: { money: profit, reputation: 10, customers: 10, knowledge: 8 },
     consequence: "Quyết định sáng suốt! Bạn đã vượt qua bước đầu tiên.",
     marxTheory: chap.theory,
     nextScenarioId: node.nextCorrectId
@@ -419,7 +457,7 @@ export function getChapterScenario(chapterId: number, char: Character) {
   const wrongOpt: Option = {
     id: `${node.id}_wrong`,
     text: `${wDecStr} (Tốn ${cost} vốn)`,
-    statsEffect: { money: -loss, reputation: -10, customers: -5, knowledge: 5 },
+    statsEffect: { money: -loss, reputation: -10, customers: -5, knowledge: 0 },
     consequence: "Sai lầm! Mọi thứ bắt đầu tồi tệ hơn.",
     marxTheory: chap.theory,
     nextScenarioId: node.nextWrongId

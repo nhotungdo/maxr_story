@@ -132,12 +132,10 @@ export default function App() {
     if (!gameState.character) return;
 
     const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
-    if (!currentChapterData) return;
+    if (!currentChapterData || !currentScenario) return;
 
-    // We get the current scenario question to save in history later
-    const scenarioData = gameState.currentScenarioId 
-      ? getSpecificScenario(gameState.currentChapter, gameState.currentScenarioId, gameState.character)
-      : currentChapterData.getScenario(gameState.character);
+    // Use currentScenario directly so we don't randomly generate a different one mid-decision
+    const scenarioData = currentScenario;
 
     // 1. Play sound based on money effect
     if (option.statsEffect.money) {
@@ -152,7 +150,11 @@ export default function App() {
     const newStats = { ...gameState.stats };
     Object.entries(option.statsEffect).forEach(([key, val]) => {
       const k = key as keyof GameStats;
-      newStats[k] = Math.max(0, newStats[k] + (val || 0));
+      if (k === 'knowledge') {
+        newStats[k] = Math.min(100, Math.max(0, newStats[k] + (val || 0)));
+      } else {
+        newStats[k] = Math.max(0, newStats[k] + (val || 0));
+      }
     });
 
     // 3. Update state to reveal everything immediately (except AI feedback)
@@ -222,9 +224,19 @@ export default function App() {
     }
 
     if (lastSelectedOption?.nextScenarioId) {
+      // Save root node decision to history
+      const newHistoryItem = {
+        chapter: gameState.currentChapter,
+        scenario: currentScenario?.question || "",
+        chosenOption: lastSelectedOption?.text || "",
+        consequence: lastSelectedOption?.consequence || "",
+        aiFeedback: gameState.currentAiFeedback
+      };
+
       // Stay in the same chapter, but move to the next scenario node
       setGameState(prev => ({
         ...prev,
+        history: [...prev.history, newHistoryItem],
         currentScenarioId: lastSelectedOption.nextScenarioId || null,
         gameState: "STORY",
         currentAiFeedback: ""
@@ -296,7 +308,8 @@ export default function App() {
     if (gameState.currentScenarioId) {
       return getSpecificScenario(gameState.currentChapter, gameState.currentScenarioId, gameState.character);
     }
-    return currentChapterData.getScenario(gameState.character);
+    return currentChapterData.getScenario(gameState.character, gameState.stats.staff);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.character, gameState.currentChapter, gameState.currentScenarioId, currentChapterData]);
   const finalEnding = gameState.character ? determineEnding({
     money: gameState.stats.money,
@@ -716,7 +729,7 @@ export default function App() {
               {/* Options Box */}
               <div className="space-y-4">
                 <h4 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] mb-2">
-                  ❓ Quyết định của bạn là gì?
+                  ❓ {currentScenario.question}
                 </h4>
 
                 <div className="grid grid-cols-1 gap-3.5">
