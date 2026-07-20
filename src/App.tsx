@@ -27,6 +27,7 @@ import {
   VolumeX
 } from "lucide-react";
 import { CHARACTERS, CHAPTERS, BADGES, determineEnding, ENDINGS } from "./data/data";
+import { getSpecificScenario } from "./data/scenarios";
 import { Character, GameState, GameStats, Option } from "./types/types";
 import { playSound, setMuted } from "./utils/audio";
 
@@ -35,6 +36,7 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState>({
     character: null,
     currentChapter: 1,
+    currentScenarioId: null,
     stats: { money: 0, reputation: 0, customers: 0, staff: 0, knowledge: 0 },
     history: [],
     badges: [],
@@ -107,6 +109,7 @@ export default function App() {
     setGameState({
       character: char,
       currentChapter: 1,
+      currentScenarioId: null,
       stats: { ...char.baseStats },
       history: [],
       badges: [],
@@ -125,14 +128,16 @@ export default function App() {
     }
   };
 
-  // Handle making a decision
   const handleMakeDecision = async (option: Option) => {
     if (!gameState.character) return;
 
     const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
     if (!currentChapterData) return;
 
-    const scenarioData = currentChapterData.getScenario(gameState.character);
+    // We get the current scenario question to save in history later
+    const scenarioData = gameState.currentScenarioId 
+      ? getSpecificScenario(gameState.currentChapter, gameState.currentScenarioId, gameState.character)
+      : currentChapterData.getScenario(gameState.character);
 
     // 1. Play sound based on money effect
     if (option.statsEffect.money) {
@@ -216,14 +221,24 @@ export default function App() {
       return;
     }
 
+    if (lastSelectedOption?.nextScenarioId) {
+      // Stay in the same chapter, but move to the next scenario node
+      setGameState(prev => ({
+        ...prev,
+        currentScenarioId: lastSelectedOption.nextScenarioId || null,
+        gameState: "STORY",
+        currentAiFeedback: ""
+      }));
+      setLastSelectedOption(null);
+      setStatChanges(null);
+      return;
+    }
+
     if (gameState.currentChapter < 7) {
       // Save to history
-      const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
-      const scenarioData = currentChapterData?.getScenario(gameState.character!);
-
       const newHistoryItem = {
         chapter: gameState.currentChapter,
-        scenario: scenarioData?.question || "",
+        scenario: currentScenario?.question || "",
         chosenOption: lastSelectedOption?.text || "",
         consequence: lastSelectedOption?.consequence || "",
         aiFeedback: gameState.currentAiFeedback
@@ -232,6 +247,7 @@ export default function App() {
       setGameState(prev => ({
         ...prev,
         currentChapter: prev.currentChapter + 1,
+        currentScenarioId: null, // Reset for next chapter
         history: [...prev.history, newHistoryItem],
         gameState: "STORY",
         currentAiFeedback: ""
@@ -240,12 +256,9 @@ export default function App() {
       setStatChanges(null);
     } else {
       // Game ended successfully
-      const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
-      const scenarioData = currentChapterData?.getScenario(gameState.character!);
-
       const newHistoryItem = {
         chapter: gameState.currentChapter,
-        scenario: scenarioData?.question || "",
+        scenario: currentScenario?.question || "",
         chosenOption: lastSelectedOption?.text || "",
         consequence: lastSelectedOption?.consequence || "",
         aiFeedback: gameState.currentAiFeedback
@@ -264,6 +277,7 @@ export default function App() {
     setGameState({
       character: null,
       currentChapter: 1,
+      currentScenarioId: null,
       stats: { money: 0, reputation: 0, customers: 0, staff: 0, knowledge: 0 },
       history: [],
       badges: [],
@@ -276,11 +290,14 @@ export default function App() {
     setSelectedCharPreview(CHARACTERS[0]);
   };
 
-  // Render variables
   const currentChapterData = CHAPTERS.find(c => c.id === gameState.currentChapter);
   const currentScenario = React.useMemo(() => {
-    return gameState.character && currentChapterData ? currentChapterData.getScenario(gameState.character) : null;
-  }, [gameState.character, gameState.currentChapter, currentChapterData]);
+    if (!gameState.character || !currentChapterData) return null;
+    if (gameState.currentScenarioId) {
+      return getSpecificScenario(gameState.currentChapter, gameState.currentScenarioId, gameState.character);
+    }
+    return currentChapterData.getScenario(gameState.character);
+  }, [gameState.character, gameState.currentChapter, gameState.currentScenarioId, currentChapterData]);
   const finalEnding = gameState.character ? determineEnding({
     money: gameState.stats.money,
     reputation: gameState.stats.reputation,
@@ -774,7 +791,11 @@ export default function App() {
                   onClick={handleProceed}
                   className="px-6 py-3 bg-[#991B1B] hover:bg-[#801414] text-white text-xs font-black uppercase tracking-widest border-2 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] hover:shadow-[2px_2px_0px_#1A1A1A] rounded-sm flex items-center gap-2 transition-all active:translate-y-0.5 active:translate-x-0.5"
                 >
-                  {gameState.currentChapter === 7 ? "Xem Kết Cục Doanh Nghiệp" : `Tiếp tục đến Chương ${gameState.currentChapter + 1}`} <ArrowRight className="w-4 h-4" />
+                  {lastSelectedOption.nextScenarioId
+                    ? "Tiếp tục diễn biến"
+                    : (gameState.currentChapter === 7
+                      ? "Xem Kết Cục Doanh Nghiệp"
+                      : `Tiếp tục đến Chương ${gameState.currentChapter + 1}`)} <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
 

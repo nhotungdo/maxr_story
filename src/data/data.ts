@@ -10,6 +10,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 1,
     description: "Khởi nghiệp với một quán café nhỏ xinh tại góc phố. Ưu điểm là vốn đầu tư vừa phải, khách hàng trẻ trung, nhưng cạnh tranh vô cùng khốc liệt.",
     businessType: "Kinh doanh đồ uống (Dịch vụ)",
+    tags: ['SERVICE', 'RETAIL'],
     strengths: "Dễ tiếp cận khách hàng, quay vòng vốn nhanh.",
     challenges: [
       "Giá nguyên liệu biến động",
@@ -33,6 +34,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 1,
     description: "Kế thừa và phát triển quán bún sườn gia truyền. Món ăn ngon, quen thuộc nhưng phụ thuộc rất lớn vào giá thực phẩm tươi sống ngoài chợ.",
     businessType: "Ẩm thực bình dân",
+    tags: ['SERVICE', 'RETAIL'],
     strengths: "Nguồn khách ổn định, nhu cầu ăn uống thiết yếu cao.",
     challenges: [
       "Giá thịt heo, gas tăng phi mã",
@@ -55,6 +57,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 2,
     description: "Mở shop bán quần áo tự thiết kế và nhập khẩu theo xu hướng. Đòi hỏi con mắt thẩm mỹ cao nhưng rủi ro hàng tồn kho vô cùng lớn.",
     businessType: "Bán lẻ thời trang",
+    tags: ['RETAIL'],
     strengths: "Biên lợi nhuận cao nếu bắt trúng xu hướng hot.",
     challenges: [
       "Tốc độ lỗi mốt cực nhanh",
@@ -77,6 +80,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 3,
     description: "Cửa hàng mua bán, sửa chữa điện thoại di động và phụ kiện. Vốn đầu tư lớn, đòi hỏi am hiểu sâu về công nghệ và đối đầu với các chuỗi lớn.",
     businessType: "Bán lẻ công nghệ",
+    tags: ['RETAIL', 'DIGITAL'],
     strengths: "Giá trị sản phẩm cao, nhu cầu sửa chữa lớn.",
     challenges: [
       "Vòng đời công nghệ siêu ngắn",
@@ -99,6 +103,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 2,
     description: "Mua xe trả góp để chạy dịch vụ chở khách. Bản thân vừa là chủ vừa là người lao động bán sức mình lấy thu nhập từng ngày.",
     businessType: "Dịch vụ vận chuyển",
+    tags: ['SERVICE'],
     strengths: "Tự chủ thời gian, làm nhiều hưởng nhiều.",
     challenges: [
       "Giá xăng dầu tăng giảm thất thường",
@@ -121,6 +126,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 3,
     description: "Sản xuất rau củ quả hữu cơ tại quê nhà. Đối mặt với quy luật tự nhiên khắc nghiệt và điệp khúc đau đầu 'được mùa mất giá'.",
     businessType: "Sản xuất nông nghiệp",
+    tags: ['AGRICULTURE'],
     strengths: "Sản phẩm tốt cho sức khỏe, xu hướng tiêu dùng xanh.",
     challenges: [
       "Thời tiết bão lụt, sâu bệnh hại",
@@ -143,6 +149,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 3,
     description: "Nhận dự án phát triển web và ứng dụng từ xa. Sử dụng chất xám, tư duy logic và kỹ năng công nghệ làm phương tiện sản xuất chính.",
     businessType: "Dịch vụ trí óc",
+    tags: ['DIGITAL', 'SERVICE'],
     strengths: "Không tốn tiền mặt bằng, chi phí vận hành siêu thấp.",
     challenges: [
       "Khách hàng ép giá, trễ thanh toán",
@@ -165,6 +172,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 4,
     description: "Quản lý một nhà xưởng cơ khí, may mặc quy mô nhỏ với hệ thống máy móc sản xuất và đội ngũ công nhân lành nghề.",
     businessType: "Sản xuất công nghiệp nhẹ",
+    tags: ['MANUFACTURING'],
     strengths: "Sản xuất hàng loạt, hạ giá thành sản phẩm trên quy mô lớn.",
     challenges: [
       "Chi phí đầu tư máy móc lớn",
@@ -187,6 +195,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 4,
     description: "Sở hữu đội xe vận tải và nhà kho trung chuyển hàng hóa. Đóng vai trò là mạch máu lưu thông của nền kinh tế hàng hóa.",
     businessType: "Dịch vụ vận tải & Lưu kho",
+    tags: ['SERVICE'],
     strengths: "Thị trường luôn cần lưu thông hàng hóa liên tục.",
     challenges: [
       "Chi phí xăng dầu, cầu đường, hao mòn lớn",
@@ -209,6 +218,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 5,
     description: "Đột phá cùng dự án ứng dụng đặt lịch tiện ích thông minh. Đòi hỏi đốt tiền gọi vốn, cạnh tranh khốc liệt với các Big Tech độc quyền.",
     businessType: "Công nghệ thông tin (Startup)",
+    tags: ['DIGITAL'],
     strengths: "Tiềm năng nhân rộng quy mô toàn cầu cực nhanh.",
     challenges: [
       "Tốc độ đốt tiền cực nhanh cho marketing",
@@ -231,6 +241,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 3,
     description: "Nhân viên môi giới cá nhân chuyên nhà đất. Thu nhập không ổn định phụ thuộc hoa hồng nhưng có thể phất lên sau 1 đêm.",
     businessType: "Dịch vụ Bất động sản",
+    tags: ['SERVICE', 'RETAIL'],
     strengths: "Không cần ôm hàng, biên lợi nhuận (hoa hồng) cực lớn.",
     challenges: [
       "Thị trường đóng băng",
@@ -247,6 +258,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 2,
     description: "Kinh doanh dịch vụ chăm sóc da và làm đẹp. Nhu cầu ngày càng cao nhưng đòi hỏi chất lượng tay nghề và máy móc hiện đại.",
     businessType: "Dịch vụ Chăm sóc sức khỏe & Sắc đẹp",
+    tags: ['SERVICE'],
     strengths: "Biên độ lợi nhuận trên dịch vụ rất cao, khách hàng trung thành.",
     challenges: [
       "Chi phí mỹ phẩm và máy móc lớn",
@@ -263,6 +275,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 1,
     description: "Dạy kèm các môn học cho học sinh phổ thông. Chỉ dùng kiến thức cá nhân nhưng sức lực có hạn.",
     businessType: "Dịch vụ Giáo dục",
+    tags: ['SERVICE'],
     strengths: "Chi phí vốn bằng 0, chỉ cần kỹ năng sư phạm.",
     challenges: [
       "Giới hạn thời gian 24h/ngày",
@@ -279,6 +292,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 2,
     description: "Mở tiệm bánh kem và bánh ngọt tự làm. Sản phẩm đẹp mắt, ngon miệng nhưng thời gian bảo quản cực ngắn.",
     businessType: "Ẩm thực & Dịch vụ",
+    tags: ['RETAIL', 'SERVICE'],
     strengths: "Sự khác biệt về hương vị và thiết kế độc quyền.",
     challenges: [
       "Nguyên liệu dư thừa dễ hỏng",
@@ -295,6 +309,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 3,
     description: "Vừa làm HLV cá nhân vừa mở một phòng tập quy mô nhỏ. Đòi hỏi đam mê thể hình và vốn đầu tư thiết bị cao.",
     businessType: "Dịch vụ Thể thao",
+    tags: ['SERVICE'],
     strengths: "Mô hình thu tiền gói dài hạn giúp xoay vòng vốn tốt.",
     challenges: [
       "Máy móc nhanh hao mòn",
@@ -311,6 +326,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 3,
     description: "Kinh doanh vật nuôi, phụ kiện và dịch vụ grooming. Nhu cầu rất lớn từ giới trẻ yêu động vật.",
     businessType: "Bán lẻ & Dịch vụ Thú cưng",
+    tags: ['RETAIL', 'SERVICE'],
     strengths: "Tình cảm của khách hàng với thú cưng tạo ra sức mua lớn.",
     challenges: [
       "Rủi ro dịch bệnh trên vật nuôi",
@@ -327,6 +343,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 4,
     description: "Sửa chữa, bảo dưỡng và độ xe ô tô. Yêu cầu kỹ thuật cao và mặt bằng lớn.",
     businessType: "Dịch vụ Sửa chữa & Kỹ thuật",
+    tags: ['SERVICE'],
     strengths: "Khách hàng sẵn sàng chi trả cao cho dịch vụ uy tín.",
     challenges: [
       "Khó tìm kiếm thợ máy giỏi",
@@ -343,6 +360,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 2,
     description: "Nhập và cắm hoa nghệ thuật cho các dịp lễ, sự kiện. Sản phẩm mang tính nghệ thuật cao.",
     businessType: "Bán lẻ & Nghệ thuật",
+    tags: ['RETAIL'],
     strengths: "Biên độ lợi nhuận cực lớn vào các ngày lễ (8/3, 20/10).",
     challenges: [
       "Hoa nhanh tàn, tỷ lệ hủy hàng cao",
@@ -359,6 +377,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 4,
     description: "Kinh doanh sự chú ý qua mạng Internet. Stream game và nhận donate, tài trợ.",
     businessType: "Giải trí kỹ thuật số",
+    tags: ['DIGITAL', 'SERVICE'],
     strengths: "Sức lan tỏa lớn, tiềm năng thu nhập vô hạn từ internet.",
     challenges: [
       "Quy luật đào thải khắc nghiệt",
@@ -375,6 +394,7 @@ export const CHARACTERS: Character[] = [
     difficulty: 3,
     description: "Thiết kế tour, bán vé máy bay và phòng khách sạn. Đòi hỏi kỹ năng chốt sale và mạng lưới đối tác tốt.",
     businessType: "Dịch vụ Du lịch",
+    tags: ['SERVICE'],
     strengths: "Không cần bỏ vốn ôm phòng, chỉ cần làm trung gian.",
     challenges: [
       "Sự cố khách quan (dịch bệnh, thời tiết)",

@@ -1,4 +1,6 @@
-import { Character, Option, IndustryTag } from "../types/types";
+const fs = require('fs');
+
+const content = `import { Character, Option, IndustryTag } from "../types/types";
 import { CHARACTER_TERMS } from "./data";
 
 type TemplateContext = {
@@ -352,8 +354,8 @@ export function getSpecificScenario(chapterId: number, scenarioId: string, char:
   const wDecStr = interpolate(node.wrong, terms);
 
   const correctOpt: Option = {
-    id: `${scenarioId}_correct`,
-    text: `${cDecStr} (Tốn ${cost} vốn)`,
+    id: \`\${scenarioId}_correct\`,
+    text: \`\${cDecStr} (Tốn \${cost} vốn)\`,
     statsEffect: { money: profit, reputation: 10, customers: 10, knowledge: 10 },
     consequence: "Lựa chọn tốt! Hệ quả tích cực đã xảy ra.",
     marxTheory: chap.theory,
@@ -361,8 +363,8 @@ export function getSpecificScenario(chapterId: number, scenarioId: string, char:
   };
 
   const wrongOpt: Option = {
-    id: `${scenarioId}_wrong`,
-    text: `${wDecStr} (Tốn ${cost} vốn)`,
+    id: \`\${scenarioId}_wrong\`,
+    text: \`\${wDecStr} (Tốn \${cost} vốn)\`,
     statsEffect: { money: -loss, reputation: -10, customers: -5, knowledge: 5 },
     consequence: "Sai lầm nghiêm trọng! Bạn tiếp tục gặp rắc rối.",
     marxTheory: chap.theory,
@@ -408,8 +410,8 @@ export function getChapterScenario(chapterId: number, char: Character) {
   const wDecStr = interpolate(node.wrong, terms);
 
   const correctOpt: Option = {
-    id: `${node.id}_correct`,
-    text: `${cDecStr} (Tốn ${cost} vốn)`,
+    id: \`\${node.id}_correct\`,
+    text: \`\${cDecStr} (Tốn \${cost} vốn)\`,
     statsEffect: { money: profit, reputation: 10, customers: 10, knowledge: 10 },
     consequence: "Quyết định sáng suốt! Bạn đã vượt qua bước đầu tiên.",
     marxTheory: chap.theory,
@@ -417,8 +419,8 @@ export function getChapterScenario(chapterId: number, char: Character) {
   };
 
   const wrongOpt: Option = {
-    id: `${node.id}_wrong`,
-    text: `${wDecStr} (Tốn ${cost} vốn)`,
+    id: \`\${node.id}_wrong\`,
+    text: \`\${wDecStr} (Tốn \${cost} vốn)\`,
     statsEffect: { money: -loss, reputation: -10, customers: -5, knowledge: 5 },
     consequence: "Sai lầm! Mọi thứ bắt đầu tồi tệ hơn.",
     marxTheory: chap.theory,
@@ -432,3 +434,7 @@ export function getChapterScenario(chapterId: number, char: Character) {
     options: shuffleArray([correctOpt, wrongOpt])
   };
 }
+`;
+
+fs.writeFileSync('src/data/scenarios.ts', content);
+console.log('Done generated scenarios.ts');
