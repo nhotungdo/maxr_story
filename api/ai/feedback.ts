@@ -49,7 +49,7 @@ Chỉ ra trực quan khái niệm kinh tế Mác - Lênin cốt lõi ở kết q
 `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         systemInstruction: "Bạn là Giáo sư AI môn Kinh tế chính trị. Bạn phải giải thích cực kỳ ngắn gọn (dưới 50 từ), trực diện vào trọng tâm lý thuyết.",

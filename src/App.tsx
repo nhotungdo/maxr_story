@@ -134,19 +134,34 @@ export default function App() {
 
     const scenarioData = currentChapterData.getScenario(gameState.character);
 
-    // 1. Immediately transition to DECISION_RESULT with loading state
-    setLastSelectedOption(option);
-    setStatChanges(null); // Clear previous visual changes to build suspense
+    // 1. Play sound based on money effect
+    if (option.statsEffect.money) {
+      if (option.statsEffect.money > 0) {
+        playSound('success');
+      } else {
+        playSound('error');
+      }
+    }
 
+    // 2. Calculate new stats
+    const newStats = { ...gameState.stats };
+    Object.entries(option.statsEffect).forEach(([key, val]) => {
+      const k = key as keyof GameStats;
+      newStats[k] = Math.max(0, newStats[k] + (val || 0));
+    });
+
+    // 3. Update state to reveal everything immediately (except AI feedback)
+    setLastSelectedOption(option);
+    setStatChanges(option.statsEffect); // Triggers visual float animations in header and consequence tags
     setGameState(prev => ({
       ...prev,
+      stats: newStats,
       aiLoading: true,
       currentAiFeedback: "",
       gameState: "DECISION_RESULT"
     }));
 
-    // 2. Fetch AI feedback
-    let feedbackResult = "";
+    // 4. Fetch AI feedback asynchronously in the background
     try {
       const response = await fetch("/api/ai/feedback", {
         method: "POST",
@@ -163,44 +178,31 @@ export default function App() {
         })
       });
 
+      let feedbackResult = "";
       if (response.ok) {
         const data = await response.json();
         feedbackResult = data.feedback;
       } else {
         throw new Error("Failed to fetch feedback");
       }
+      
+      setGameState(prev => ({
+        ...prev,
+        currentAiFeedback: feedbackResult,
+        aiLoading: false
+      }));
     } catch (err) {
       console.error(err);
       // Fallback content in case API is offline or key is missing
-      feedbackResult = `[Giáo sư AI phản hồi]: Quyết định này minh họa sâu sắc khái niệm "${currentChapterData.concept}". ` +
+      const fallbackResult = `[Giáo sư AI phản hồi]: Quyết định này minh họa sâu sắc khái niệm "${currentChapterData.concept}". ` +
         `Lựa chọn của bạn đã trực tiếp tác động lên các thuộc tính hàng hóa và dịch vụ của bạn. Hãy ghi nhớ rằng trong bất kỳ chế độ kinh tế nào, ` +
         `việc tối ưu chi phí lao động cá biệt so với hao phí lao động xã hội cần thiết luôn là chìa khóa để giành lợi thế cạnh tranh!`;
+      setGameState(prev => ({
+        ...prev,
+        currentAiFeedback: fallbackResult,
+        aiLoading: false
+      }));
     }
-
-    // 3. Play sound based on money effect
-    if (option.statsEffect.money) {
-      if (option.statsEffect.money > 0) {
-        playSound('success');
-      } else {
-        playSound('error');
-      }
-    }
-
-    // 4. Calculate new stats
-    const newStats = { ...gameState.stats };
-    Object.entries(option.statsEffect).forEach(([key, val]) => {
-      const k = key as keyof GameStats;
-      newStats[k] = Math.max(0, newStats[k] + (val || 0));
-    });
-
-    // 5. Update state to reveal everything at once
-    setStatChanges(option.statsEffect); // Triggers visual float animations in header and consequence tags
-    setGameState(prev => ({
-      ...prev,
-      stats: newStats,
-      currentAiFeedback: feedbackResult,
-      aiLoading: false
-    }));
   };
 
   // Proceed to next chapter or ending
