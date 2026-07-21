@@ -215,7 +215,7 @@ export default function App() {
   // Proceed to next chapter or ending
   const handleProceed = () => {
     // Check for failure condition: Money <= 0
-    if (gameState.stats.money <= 0) {
+    if (gameState.stats.money <= 0 || lastSelectedOption?.isViolation) {
       setGameState(prev => ({
         ...prev,
         gameState: "ENDING"
@@ -315,7 +315,7 @@ export default function App() {
     money: gameState.stats.money,
     reputation: gameState.stats.reputation,
     knowledge: gameState.stats.knowledge
-  }) : null;
+  }, !!lastSelectedOption?.isViolation) : null;
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#1A1A1A] font-sans flex flex-col selection:bg-[#991B1B]/20 selection:text-[#991B1B]">

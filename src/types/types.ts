@@ -30,6 +30,7 @@ export interface Option {
   consequence: string;
   marxTheory: string; // Explaining the theory concept
   nextScenarioId?: string; // Tình huống tiếp theo (nếu có)
+  isViolation?: boolean; // Nếu chọn thì sẽ vi phạm và bị đình chỉ (game over)
 }
 
 export interface Chapter {
@@ -37,7 +38,7 @@ export interface Chapter {
   title: string;
   concept: string;
   description: string;
-  getScenario: (character: Character, currentStaff: number) => {
+  getScenario: (character: Character, currentStaff: number, history?: any[]) => {
     id?: string;
     intro: string;
     question: string;

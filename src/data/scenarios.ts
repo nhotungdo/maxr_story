@@ -20,6 +20,7 @@ export type ScenarioNode = {
   nextCorrectId?: string;
   nextWrongId?: string;
   requiresStaff?: boolean; // Nếu true, chỉ hiện ra nếu số lượng nhân viên > 0
+  isWrongViolation?: boolean; // Đánh dấu lựa chọn sai là vi phạm (game over)
 };
 
 // Hàm nội suy
@@ -110,7 +111,8 @@ export const chapterTrees: Record<number, { theory: string, rootNodes: ScenarioN
         intro: "Bị thanh tra môi trường bắt quả tang, doanh nghiệp đối mặt án phạt nặng và tẩy chay.",
         question: "Hành động chống lại quy luật khách quan đã mang lại hậu quả. Bước tiếp theo của bạn là gì?",
         correct: "Đứng ra xin lỗi công khai, nộp phạt và cam kết khắc phục triệt để.",
-        wrong: "Dùng tiền hối lộ báo chí để bưng bít thông tin."
+        wrong: "Dùng tiền hối lộ báo chí để bưng bít thông tin.",
+        isWrongViolation: true
       },
       "c1_srv_sub_c": {
         id: "c1_srv_sub_c",
@@ -192,7 +194,8 @@ export const chapterTrees: Record<number, { theory: string, rootNodes: ScenarioN
         intro: "Vì chỉ nhận tiền mặt, một lượng tiền giả lớn đã bị lén lút đưa vào két sắt cửa hàng.",
         question: "Đồng tiền giấy chỉ là ký hiệu của giá trị. Bạn sẽ xử lý rủi ro tiền giả này như thế nào?",
         correct: "Trình báo cơ quan chức năng và trang bị máy soi tiền giả ngay lập tức.",
-        wrong: "Lén lút tuồn số tiền giả đó thối lại cho những khách hàng khác."
+        wrong: "Lén lút tuồn số tiền giả đó thối lại cho những khách hàng khác.",
+        isWrongViolation: true
       }
     }
   },
@@ -239,7 +242,8 @@ export const chapterTrees: Record<number, { theory: string, rootNodes: ScenarioN
         intro: "{workforce} kiệt sức, bất mãn và rủ nhau đình công tập thể đúng lúc cao điểm.",
         question: "Mâu thuẫn lợi ích gay gắt giữa người sử dụng lao động và người lao động đã bùng phát. Bạn sẽ xử lý thế nào?",
         correct: "Xin lỗi, chấp nhận yêu sách hợp lý của công nhân và cải thiện ngay môi trường làm việc.",
-        wrong: "Gọi giang hồ đến đe dọa ép công nhân phải trở lại làm việc."
+        wrong: "Gọi giang hồ đến đe dọa ép công nhân phải trở lại làm việc.",
+        isWrongViolation: true
       },
       "c4_sub_ns_c": {
         id: "c4_sub_ns_c",
@@ -290,7 +294,8 @@ export const chapterTrees: Record<number, { theory: string, rootNodes: ScenarioN
         intro: "Giảm giá sốc khiến dòng tiền đứt gãy, không đủ tiền trả lương cho {workforce}.",
         question: "Cạnh tranh không lành mạnh đã phá vỡ cấu trúc tái sản xuất của bạn. Bước đi cứu vãn là gì?",
         correct: "Gấp rút vay vốn ngân hàng, ngừng ngay việc giảm giá và tái cơ cấu lại danh mục {productPlural}.",
-        wrong: "Trốn nợ, ôm toàn bộ số tiền còn lại bỏ trốn."
+        wrong: "Trốn nợ, ôm toàn bộ số tiền còn lại bỏ trốn.",
+        isWrongViolation: true
       }
     }
   },
@@ -356,7 +361,8 @@ export const chapterTrees: Record<number, { theory: string, rootNodes: ScenarioN
         intro: "Bị cơ quan điều tra phát hiện trốn thuế, bạn đối mặt với nguy cơ khởi tố hình sự theo pháp luật Nhà nước.",
         question: "Sự can thiệp của pháp luật nhằm đảm bảo công bằng xã hội. Bạn sẽ đối mặt với sai lầm của mình thế nào?",
         correct: "Thành khẩn khai báo, nộp phạt truy thu thuế và hợp tác với cơ quan điều tra.",
-        wrong: "Tiếp tục tiêu hủy tài liệu chứng cứ hòng chối tội."
+        wrong: "Tiếp tục tiêu hủy tài liệu chứng cứ hòng chối tội.",
+        isWrongViolation: true
       }
     }
   }
@@ -399,7 +405,8 @@ export function getSpecificScenario(chapterId: number, scenarioId: string, char:
     statsEffect: { money: -loss, reputation: -10, customers: -5, knowledge: 0 },
     consequence: "Sai lầm nghiêm trọng! Bạn tiếp tục gặp rắc rối.",
     marxTheory: chap.theory,
-    nextScenarioId: node.nextWrongId
+    nextScenarioId: node.nextWrongId,
+    isViolation: node.isWrongViolation
   };
 
   return {
@@ -413,22 +420,34 @@ export function getSpecificScenario(chapterId: number, scenarioId: string, char:
 /**
  * Lấy tình huống gốc (root) cho chương dựa trên tag
  */
-export function getChapterScenario(chapterId: number, char: Character, currentStaff: number) {
+export function getChapterScenario(chapterId: number, char: Character, currentStaff: number, history: any[] = []) {
   const terms = CHARACTER_TERMS[char.id] || CHARACTER_TERMS.minh_cafe;
   const charTags = char.tags || [];
 
   const chap = chapterTrees[chapterId];
   
   // Lọc các root nodes phù hợp với tag của nhân vật và số lượng nhân sự
-  const validNodes = chap.rootNodes.filter(node => {
-    // Nếu node yêu cầu có nhân viên nhưng hiện tại không có nhân viên -> loại
+  let validNodes = chap.rootNodes.filter(node => {
     if (node.requiresStaff === true && currentStaff <= 0) return false;
-    // Nếu node dành riêng cho 0 nhân viên nhưng hiện đang có nhân viên -> loại
     if (node.requiresStaff === false && currentStaff > 0) return false;
-
-    if (node.tags.length === 0) return true; // Áp dụng cho mọi ngành
-    return node.tags.some(tag => charTags.includes(tag));
+    if (node.tags.length > 0 && !node.tags.some(tag => charTags.includes(tag))) return false;
+    
+    // Kiểm tra lịch sử để không lặp lại
+    const question = interpolate(node.question, terms);
+    if (history.some(h => h.scenario === question)) return false;
+    
+    return true;
   });
+
+  // Fallback nếu tất cả đều đã chơi
+  if (validNodes.length === 0) {
+    validNodes = chap.rootNodes.filter(node => {
+      if (node.requiresStaff === true && currentStaff <= 0) return false;
+      if (node.requiresStaff === false && currentStaff > 0) return false;
+      if (node.tags.length > 0 && !node.tags.some(tag => charTags.includes(tag))) return false;
+      return true;
+    });
+  }
 
   // Chọn ngẫu nhiên 1 node hợp lệ
   const node = validNodes.length > 0 

@@ -583,49 +583,49 @@ export const CHAPTERS: Chapter[] = [
     title: "Chương 1: Đối tượng và phương pháp nghiên cứu",
     concept: "Quy luật vận động khách quan của thị trường",
     description: "Bạn vừa bước vào kinh doanh. Mọi thứ thật bỡ ngỡ. Tại sao có ngày đông khách nhưng có ngày lại vắng ngắt? Phải chăng do may rủi hay có quy luật kinh tế ẩn giấu đằng sau?",
-    getScenario: (char, currentStaff) => getChapterScenario(1, char, currentStaff)
+    getScenario: (char, currentStaff, history) => getChapterScenario(1, char, currentStaff, history)
   },
   {
     id: 2,
     title: "Chương 2: Hàng hóa",
     concept: "Thuộc tính của Hàng hóa & Lượng giá trị",
     description: "Hàng hóa có hai thuộc tính: Giá trị sử dụng và Giá trị. Làm thế nào để định giá sản phẩm và cân bằng giữa chất lượng sản phẩm với chi phí sản xuất?",
-    getScenario: (char, currentStaff) => getChapterScenario(1, char, currentStaff)
+    getScenario: (char, currentStaff, history) => getChapterScenario(2, char, currentStaff, history)
   },
   {
     id: 3,
     title: "Chương 3: Tiền tệ",
     concept: "Chức năng của Tiền tệ",
     description: "Tiền tệ không chỉ là những tờ giấy bạc, nó thực hiện các chức năng cốt lõi trong nền kinh tế thị trường. Hãy lựa chọn phương thức giao dịch để tăng tốc độ lưu thông dòng tiền.",
-    getScenario: (char, currentStaff) => getChapterScenario(2, char, currentStaff)
+    getScenario: (char, currentStaff, history) => getChapterScenario(3, char, currentStaff, history)
   },
   {
     id: 4,
     title: "Chương 4: Giá trị thặng dư",
     concept: "Nguồn gốc của Giá trị thặng dư & Sức lao động",
     description: "Giá trị thặng dư là nguồn gốc tích lũy của tư bản. Làm thế nào để điều phối giờ làm việc, tiền lương và động viên sức lao động của nhân viên một cách hiệu quả?",
-    getScenario: (char, currentStaff) => getChapterScenario(3, char, currentStaff)
+    getScenario: (char, currentStaff, history) => getChapterScenario(4, char, currentStaff, history)
   },
   {
     id: 5,
     title: "Chương 5: Cạnh tranh",
     concept: "Cạnh tranh trong nền Kinh tế thị trường",
     description: "Cạnh tranh là động lực thúc đẩy nền kinh tế nhưng cũng vô cùng tàn nhẫn. Một đối thủ mạnh xuất hiện ngay sát bên cạnh bạn để tranh giành khách hàng.",
-    getScenario: (char, currentStaff) => getChapterScenario(4, char, currentStaff)
+    getScenario: (char, currentStaff, history) => getChapterScenario(5, char, currentStaff, history)
   },
   {
     id: 6,
     title: "Chương 6: Độc quyền",
     concept: "Sự xuất hiện của các Tổ chức Độc quyền lớn",
     description: "Các ông lớn độc quyền sở hữu tiềm lực tài chính khổng lồ có thể bóp nghẹt các cửa hàng nhỏ. Làm thế nào để sống sót trước gã khổng lồ độc quyền?",
-    getScenario: (char, currentStaff) => getChapterScenario(5, char, currentStaff)
+    getScenario: (char, currentStaff, history) => getChapterScenario(6, char, currentStaff, history)
   },
   {
     id: 7,
     title: "Chương 7: Kinh tế thị trường định hướng XHCN",
     concept: "Vai trò quản lý của Nhà nước & Kinh tế định hướng XHCN",
     description: "Nền kinh tế thị trường định hướng xã hội chủ nghĩa tại Việt Nam gắn liền phát triển kinh tế với công bằng xã hội. Hãy tận dụng chính sách nhà nước để cất cánh.",
-    getScenario: (char, currentStaff) => getChapterScenario(6, char, currentStaff)
+    getScenario: (char, currentStaff, history) => getChapterScenario(7, char, currentStaff, history)
   }
 ];
 
@@ -695,10 +695,20 @@ export const ENDINGS: Ending[] = [
     description: "Xin chúc mừng thành tựu cao quý nhất! Bạn không chỉ làm giàu cho bản thân mà còn kết hợp hoàn hảo giữa lợi ích kinh tế với trách nhiệm xã hội. Bằng cách tận dụng tuyệt vời các chính sách hỗ trợ phát triển xanh của Nhà nước trong nền kinh tế thị trường định hướng XHCN, chăm lo đầy đủ đời sống vật chất và tinh thần cho người lao động, doanh nghiệp của bạn đã trở thành ngọn hải đăng sáng ngời vì cộng đồng xã hội phồn vinh!",
     bgGradient: "from-amber-500/20 via-orange-600/20 to-yellow-600/20",
     illustration: "🤝"
+  },
+  {
+    id: "ending_e_jail",
+    title: "Ending E – Vòng lao lý và Đổ vỡ",
+    description: "Bạn đã vi phạm nghiêm trọng pháp luật và đạo đức kinh doanh. Lợi nhuận không thể đánh đổi bằng việc chà đạp lên quy luật khách quan và lợi ích cộng đồng. Cơ quan chức năng đã vào cuộc, doanh nghiệp của bạn bị đình chỉ và bạn đối mặt với các hình phạt thích đáng. Đây là dấu chấm hết cho một sự nghiệp bất chính!",
+    bgGradient: "from-gray-700/50 via-gray-900/50 to-black/50",
+    illustration: "🚔"
   }
 ];
 
-export function determineEnding(stats: { money: number; reputation: number; knowledge: number }): Ending {
+export function determineEnding(stats: { money: number; reputation: number; knowledge: number }, isViolation: boolean = false): Ending {
+  if (isViolation) {
+    return ENDINGS[4]; // Ending E - Vòng lao lý
+  }
   if (stats.money <= 0) {
     return ENDINGS[1]; // Phá sản
   }
